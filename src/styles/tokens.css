@@ -1,0 +1,9 @@
+:root{--bg:#f7f8f6;--panel:#fff;--text:#202422;--muted:#68716c;--line:#e4e8e4;--accent:#e76636;--soft:#fff2eb;--code:#f1f3f1;--shadow:0 16px 45px rgba(31,42,35,.07)}
+
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{margin:0;background:radial-gradient(circle at 75% -20%,rgba(231,102,54,.08),transparent 34%),var(--bg);color:var(--text);font:14px/1.75 Arial,"PingFang SC",sans-serif}
+
+.dark{min-height:100vh;--bg:#171a18;--panel:#202421;--text:#eef1ee;--muted:#a0a8a2;--line:#343a36;--soft:#392820;--code:#2b302d;--shadow:0 18px 50px rgba(0,0,0,.22);background:radial-gradient(circle at 75% -20%,rgba(231,102,54,.12),transparent 34%),var(--bg)}

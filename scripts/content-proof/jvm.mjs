@@ -1,0 +1,23 @@
+import{proof as p}from'../content-depth/profile.mjs'
+const q=(a,s,e,n,x)=>p(a,'shell',s,e,n,x)
+export const jvmProofs={
+  'jvm/runtime-data-area':q([['jcmd VM.native_memory summary','堆外分类总账'],['jcmd GC.heap_info / VM.classloader_stats','堆与类加载器证据']],`java -Xms2g -Xmx2g -Xss512k -XX:MaxMetaspaceSize=256m \
+  -XX:MaxDirectMemorySize=512m -XX:NativeMemoryTracking=summary -jar app.jar`,'在同一容器限制下逐步增加线程、DirectByteBuffer 和动态类，记录 Heap、Metaspace、Thread、Code 与 RSS 的差值。',[['Xmx/容器','示例不超过 60%','>75%','堆外无余量'],['线程×Xss','纳入总账','超过内存 15%','控制线程/Xss'],['RSS-堆','可由 NMT 解释','持续未知增长','native 泄漏']],['建立进程内存预算表','限制线程与直接内存','开启 NMT 基线对比']),
+  'jvm/gc-guide':q([['-Xlog:gc*','停顿、阶段与堆区域'],['JFR ObjectAllocationSample','对象分配热点']],`java -Xms4g -Xmx4g -XX:+UseG1GC \
+  -Xlog:gc*,safepoint:file=gc.log:time,uptime,level,tags -jar app.jar`,'以真实对象存活率跑 30 分钟稳态和 5 倍峰值；对比 GC 前后占用、分配、晋升和业务 P99。',[['GC 后堆','稳态水平线','持续阶梯上涨','泄漏/缓存增长'],['暂停 P99','低于 SLO 10%','突破预算','收集器/存活集'],['分配速率','容量内稳定','翻倍伴随发布','代码分配回归']],['先降低分配热点','为并发 GC 留 CPU 余量','按 SLO 选择收集器']),
+  'jvm/production-memory-sizing':q([['-XX:MaxRAMPercentage','容器感知堆比例'],['jcmd VM.native_memory','Heap 外各分类']],`java -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=60 \
+  -Xss512k -XX:MaxDirectMemorySize=512m -jar app.jar`,'在 2/4/8GiB 容器规格分别压测峰值，记录 RSS、GC 后堆、直接内存和线程栈，验证参数随规格缩放。',[['RSS 峰值/limit','<80% 示例','>90%','OOMKill 风险'],['GC 后堆/Xmx','<60% 示例','>75%','余量不足'],['native 未分类','稳定','持续增长','开启 detail NMT']],['从容器限制反推 Xmx','预留 20%+故障余量','把线程/直接内存设置上限']),
+  'jvm/production-oom-troubleshooting':q([['-XX:+HeapDumpOnOutOfMemoryError','堆 OOM 自动现场'],['jcmd VM.native_memory / GC.class_histogram','native 与堆快速分类']],`java -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/dumps \
+  -XX:StartFlightRecording=filename=/dumps/app.jfr,maxage=30m \
+  -XX:NativeMemoryTracking=summary -jar app.jar`,'分别制造 heap、Metaspace、direct buffer 和线程 OOM，验证每类是否产出足够证据且 dump 路径容量可用。',[['dump 成功率','演练 100%','事故无文件','修复权限/磁盘'],['GC 后堆斜率','稳定','分钟级持续上升','对象泄漏'],['RSS-Xmx','可解释','逼近容器余量','native/线程']],['先保存现场再重启','按 OOM 区域选工具','dump 目录独立限额并自动转存']),
+  'jvm/class-loading':q([['-Xlog:class+load=info','类来源与加载时间'],['javap -c <clinit>','静态初始化字节码']],`java -Xlog:class+load=info,class+init=debug:file=class.log -jar app.jar`,'构造加载不初始化、反射初始化和并发首次使用，核对 <clinit> 次数与顺序；重型初始化记录启动火焰图。',[['类初始化失败','目标 0','ExceptionInInitializerError','移除副作用'],['加载类数','版本基线稳定','发布后突增','动态生成/扫描'],['启动初始化时长','预算内','超过总启动 20%','延迟或预计算']],['静态初始化禁止远程 I/O','依赖显式装配','初始化失败在启动探针暴露']),
+  'jvm/classloader-delegation':q([['ClassLoader#loadClass','findLoaded→parent→findClass'],['jcmd VM.classloader_stats','加载器数量与 Metaspace']],`java -Xlog:class+load=info,class+unload=info:file=loaders.log -jar app.jar`,'加载两份同名接口并打印 class.getClassLoader，复现强转失败；卸载插件后强制完整 GC 观察 unload。',[['同名类加载器数','共享 API 为 1','>1','排除重复依赖'],['旧插件加载器','卸载后归零','持续累积','查 GC Root'],['Metaspace 基线','重载后回落','阶梯上涨','加载器泄漏']],['共享 API 只由父加载器定义','恢复线程上下文加载器','注销 Driver/线程/缓存引用']),
+  'jvm/jit-compiler':q([['-XX:+PrintCompilation','编译层级与去优化'],['JFR Compilation/Deoptimization','热点方法时间线']],`java -XX:+UnlockDiagnosticVMOptions -XX:+PrintCompilation \
+  -XX:+PrintInlining -jar app.jar`,'JMH 使用多 fork 和充分 warmup，对单态/多态调用比较；防止死代码消除并记录 Code Cache。',[['warmup 后吞吐','进入稳定平台','仍持续爬升','预热不足'],['deopt 次数','低且可解释','周期性尖峰','类型/假设变化'],['Code Cache','<80%','接近满','调容量/减少生成']],['性能测试加 Blackhole 与多 fork','稳定热路径类型','监控 Code Cache 和去优化']),
+  'jvm/object-allocation':q([['JOL ClassLayout','对象头、字段和对齐'],['JFR ObjectAllocationSample','分配热点与 TLAB']],`java -XX:StartFlightRecording=filename=alloc.jfr,settings=profile \
+  -XX:+UnlockDiagnosticVMOptions -jar app.jar`,'用 JOL 测实际对象布局，再以同请求量对比优化前后 allocation rate、Young GC 和吞吐。',[['分配字节/请求','基线稳定','发布后+30%','临时对象回归'],['TLAB refill','随分配线性','异常密集','热点分配'],['晋升速率','短命对象低','持续提高','对象寿命变长']],['先优化 Top 分配栈','普通小对象不建池','大数组批次设置上限']),
+  'jvm/stack-metaspace-errors':q([['-Xss / StackOverflowError 栈','递归深度证据'],['jcmd VM.classloader_stats','Metaspace 按加载器定位']],`java -Xss512k -XX:MaxMetaspaceSize=256m \
+  -Xlog:class+load=info,class+unload=info -jar app.jar`,'分别对深树递归和循环动态代理做边界测试；记录最大安全深度、加载类数和卸载后 Metaspace。',[['递归深度','小于演练上限 50%','接近上限','改迭代'],['已加载类数','稳态平台','按请求增长','生成类泄漏'],['卸载类数','热部署后出现','始终 0 且元空间涨','加载器被引用']],['无限递归改迭代栈','动态类缓存设边界','热部署清理线程和注册表']),
+  'jvm/gc-tuning':q([['GCeasy/GCViewer 或统一日志解析','停顿和代际基线'],['jstat 仅应急采样','不能替代完整 GC 日志']],`java -Xms4g -Xmx4g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 \
+  -Xlog:gc*:file=gc-%t.log:time,uptime,level,tags -jar app.jar`,'每轮只改变一个参数或一处分配代码，使用同数据同流量运行完整周期，对比业务 P99、CPU、吞吐与 GC 后基线。',[['暂停 P99','<目标值','连续 3 窗超限','回滚本轮'],['吞吐损失','<5% 示例','>10%','目标过激'],['老年代基线','稳定','持续上涨','先查存活对象']],['一次只改一个变量','调参前先做分配剖析','灰度设置业务与 GC 双回滚线'])
+}

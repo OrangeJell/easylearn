@@ -1,0 +1,1949 @@
+[
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "categoryOrder": 1,
+    "slug": "string-immutable",
+    "order": 1,
+    "title": "String 为什么被 final 修饰且不可变？",
+    "description": "从 final、常量池、哈希缓存和线程安全理解 String",
+    "updated": "2026-07-23",
+    "minutes": 39,
+    "level": "基础",
+    "file": "java-basic/string-immutable",
+    "prerequisites": [],
+    "related": [
+      "java-basic/generics"
+    ],
+    "next": [
+      "java-basic/equals-hashcode"
+    ]
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "categoryOrder": 1,
+    "slug": "equals-hashcode",
+    "order": 2,
+    "title": "==、equals 和 hashCode 的区别？",
+    "description": "对象相等性契约与集合中的实际影响",
+    "updated": "2026-07-23",
+    "minutes": 34,
+    "level": "基础",
+    "file": "java-basic/equals-hashcode",
+    "prerequisites": [
+      "java-basic/string-immutable"
+    ],
+    "related": [
+      "collections/hashmap"
+    ],
+    "next": [
+      "java-basic/generics"
+    ]
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "categoryOrder": 1,
+    "slug": "generics",
+    "order": 3,
+    "title": "Java 泛型、类型擦除与通配符详解",
+    "description": "掌握泛型类、泛型方法、类型擦除以及 extends 和 super 的使用边界",
+    "updated": "2026-07-23",
+    "minutes": 38,
+    "level": "进阶",
+    "file": "java-basic/generics",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "categoryOrder": 1,
+    "slug": "exception-handling",
+    "order": 4,
+    "title": "Java 异常体系与最佳实践是什么？",
+    "description": "区分 Error、受检异常和运行时异常，并掌握异常设计与资源释放",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "基础",
+    "file": "java-basic/exception-handling",
+    "prerequisites": [
+      "java-basic/equals-hashcode"
+    ],
+    "related": [],
+    "next": [
+      "java-basic/reflection-annotations"
+    ]
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "categoryOrder": 1,
+    "slug": "reflection-annotations",
+    "order": 5,
+    "title": "Java 反射和注解的原理与使用场景是什么？",
+    "description": "理解 Class 元数据、反射调用、注解保留策略及框架中的典型应用",
+    "updated": "2026-07-23",
+    "minutes": 43,
+    "level": "进阶",
+    "file": "java-basic/reflection-annotations",
+    "prerequisites": [
+      "java-basic/generics"
+    ],
+    "related": [],
+    "next": [
+      "java-basic/serialization"
+    ]
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "categoryOrder": 1,
+    "slug": "serialization",
+    "order": 6,
+    "title": "Java 序列化有哪些方式和风险？",
+    "description": "比较 JDK、JSON 和二进制序列化，并分析兼容性、安全性与选型原则",
+    "updated": "2026-07-23",
+    "minutes": 43,
+    "level": "进阶",
+    "file": "java-basic/serialization",
+    "prerequisites": [
+      "java-basic/reflection-annotations"
+    ],
+    "related": [],
+    "next": [
+      "java-basic/interface-abstract-class"
+    ]
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "categoryOrder": 1,
+    "slug": "interface-abstract-class",
+    "order": 7,
+    "title": "接口和抽象类有什么区别？",
+    "description": "从类型关系、状态复用、默认方法和演进能力选择接口或抽象类",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "基础",
+    "file": "java-basic/interface-abstract-class",
+    "prerequisites": [
+      "java-basic/generics"
+    ],
+    "related": [],
+    "next": [
+      "java-basic/overload-override"
+    ]
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "categoryOrder": 1,
+    "slug": "overload-override",
+    "order": 8,
+    "title": "方法重载和重写有什么区别？",
+    "description": "理解编译期重载选择、运行期动态绑定以及重写的类型约束",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "基础",
+    "file": "java-basic/overload-override",
+    "prerequisites": [
+      "java-basic/interface-abstract-class"
+    ],
+    "related": [],
+    "next": [
+      "java-basic/pass-by-value"
+    ]
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "categoryOrder": 1,
+    "slug": "pass-by-value",
+    "order": 9,
+    "title": "Java 到底是值传递还是引用传递？",
+    "description": "用基本类型、对象引用和重新赋值解释 Java 参数传递语义",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "基础",
+    "file": "java-basic/pass-by-value",
+    "prerequisites": [
+      "java-basic/equals-hashcode"
+    ],
+    "related": [],
+    "next": [
+      "java-basic/autoboxing-integer-cache"
+    ]
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "categoryOrder": 1,
+    "slug": "autoboxing-integer-cache",
+    "order": 10,
+    "title": "自动装箱、拆箱和 Integer 缓存有哪些坑？",
+    "description": "理解包装类型转换、对象缓存、空指针和数值比较的正确方式",
+    "updated": "2026-07-23",
+    "minutes": 40,
+    "level": "基础",
+    "file": "java-basic/autoboxing-integer-cache",
+    "prerequisites": [
+      "java-basic/equals-hashcode"
+    ],
+    "related": [
+      "java-basic/string-immutable"
+    ],
+    "next": []
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "categoryOrder": 2,
+    "slug": "hashmap",
+    "order": 1,
+    "title": "HashMap 的底层原理是什么？",
+    "description": "从哈希定位、冲突处理到扩容与并发边界",
+    "updated": "2026-07-23",
+    "minutes": 39,
+    "level": "进阶",
+    "file": "collections/hashmap",
+    "prerequisites": [
+      "java-basic/equals-hashcode"
+    ],
+    "related": [
+      "collections/arraylist-linkedlist"
+    ],
+    "next": [
+      "concurrency/volatile-happens-before"
+    ]
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "categoryOrder": 2,
+    "slug": "arraylist-linkedlist",
+    "order": 2,
+    "title": "ArrayList 与 LinkedList 应该怎么选？",
+    "description": "从数据结构、扩容、随机访问和真实插入成本比较两种 List",
+    "updated": "2026-07-23",
+    "minutes": 37,
+    "level": "基础",
+    "file": "collections/arraylist-linkedlist",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "categoryOrder": 2,
+    "slug": "concurrenthashmap",
+    "order": 3,
+    "title": "ConcurrentHashMap 如何保证线程安全？",
+    "description": "对比 JDK 7 与 JDK 8 的结构，理解并发读写、扩容和复合操作",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "进阶",
+    "file": "collections/concurrenthashmap",
+    "prerequisites": [
+      "collections/hashmap",
+      "concurrency/locks-aqs"
+    ],
+    "related": [],
+    "next": [
+      "collections/copy-on-write-arraylist"
+    ]
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "categoryOrder": 2,
+    "slug": "set-comparison",
+    "order": 4,
+    "title": "HashSet、LinkedHashSet 和 TreeSet 有什么区别？",
+    "description": "比较三种 Set 的去重依据、顺序、复杂度和适用场景",
+    "updated": "2026-07-23",
+    "minutes": 40,
+    "level": "基础",
+    "file": "collections/set-comparison",
+    "prerequisites": [
+      "collections/hashmap"
+    ],
+    "related": [],
+    "next": [
+      "collections/comparable-comparator"
+    ]
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "categoryOrder": 2,
+    "slug": "fail-fast-iterator",
+    "order": 5,
+    "title": "fail-fast 和 fail-safe 迭代器有什么区别？",
+    "description": "理解结构修改检测、弱一致遍历以及并发修改异常的正确处理方式",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "基础",
+    "file": "collections/fail-fast-iterator",
+    "prerequisites": [
+      "collections/arraylist-linkedlist"
+    ],
+    "related": [],
+    "next": [
+      "collections/copy-on-write-arraylist"
+    ]
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "categoryOrder": 2,
+    "slug": "copy-on-write-arraylist",
+    "order": 6,
+    "title": "CopyOnWriteArrayList 适合什么场景？",
+    "description": "理解写时复制、快照迭代及其在读多写少场景下的收益与代价",
+    "updated": "2026-07-23",
+    "minutes": 40,
+    "level": "进阶",
+    "file": "collections/copy-on-write-arraylist",
+    "prerequisites": [
+      "collections/fail-fast-iterator",
+      "concurrency/locks-aqs"
+    ],
+    "related": [],
+    "next": [
+      "collections/concurrent-collections"
+    ]
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "categoryOrder": 2,
+    "slug": "queue-deque-priorityqueue",
+    "order": 7,
+    "title": "Queue、Deque 和 PriorityQueue 应该怎么用？",
+    "description": "掌握队列与双端队列 API、堆结构及优先队列的复杂度和边界",
+    "updated": "2026-07-23",
+    "minutes": 40,
+    "level": "基础",
+    "file": "collections/queue-deque-priorityqueue",
+    "prerequisites": [
+      "collections/arraylist-linkedlist"
+    ],
+    "related": [],
+    "next": [
+      "collections/comparable-comparator"
+    ]
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "categoryOrder": 2,
+    "slug": "concurrent-collections",
+    "order": 8,
+    "title": "同步集合和并发集合有什么区别？",
+    "description": "比较同步包装器与并发容器的锁粒度、迭代语义和复合操作",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "进阶",
+    "file": "collections/concurrent-collections",
+    "prerequisites": [
+      "collections/concurrenthashmap"
+    ],
+    "related": [],
+    "next": [
+      "collections/immutable-collections"
+    ]
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "categoryOrder": 2,
+    "slug": "comparable-comparator",
+    "order": 9,
+    "title": "Comparable 和 Comparator 有什么区别？",
+    "description": "掌握自然顺序、外部比较策略、稳定排序和比较器契约",
+    "updated": "2026-07-23",
+    "minutes": 40,
+    "level": "基础",
+    "file": "collections/comparable-comparator",
+    "prerequisites": [
+      "collections/set-comparison"
+    ],
+    "related": [],
+    "next": [
+      "collections/immutable-collections"
+    ]
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "categoryOrder": 2,
+    "slug": "immutable-collections",
+    "order": 10,
+    "title": "不可变集合和只读集合有什么区别？",
+    "description": "区分不可修改视图、防御性复制与真正不可变的数据结构",
+    "updated": "2026-07-23",
+    "minutes": 40,
+    "level": "进阶",
+    "file": "collections/immutable-collections",
+    "prerequisites": [
+      "collections/arraylist-linkedlist"
+    ],
+    "related": [
+      "java-basic/string-immutable"
+    ],
+    "next": []
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "categoryOrder": 3,
+    "slug": "thread-pool",
+    "order": 1,
+    "title": "Java 线程池有几种创建方式？",
+    "description": "从 execute 流程、队列策略到生产配置",
+    "updated": "2026-07-23",
+    "minutes": 40,
+    "level": "进阶",
+    "file": "concurrency/thread-pool",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "categoryOrder": 3,
+    "slug": "volatile-happens-before",
+    "order": 2,
+    "title": "volatile 如何保证可见性和有序性？",
+    "description": "从 JMM、happens-before 和内存屏障理解 volatile",
+    "updated": "2026-07-23",
+    "minutes": 36,
+    "level": "进阶",
+    "file": "concurrency/volatile-happens-before",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "categoryOrder": 3,
+    "slug": "locks-aqs",
+    "order": 3,
+    "title": "synchronized、ReentrantLock 与 AQS 原理",
+    "description": "理解监视器锁、显式锁、可重入、公平性以及 AQS 同步队列",
+    "updated": "2026-07-23",
+    "minutes": 37,
+    "level": "进阶",
+    "file": "concurrency/locks-aqs",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "categoryOrder": 3,
+    "slug": "thread-lifecycle-communication",
+    "order": 4,
+    "title": "Java 线程有哪些状态？线程间如何通信？",
+    "description": "理解线程状态转换以及 wait、notify、join 和中断的协作方式",
+    "updated": "2026-07-23",
+    "minutes": 44,
+    "level": "基础",
+    "file": "concurrency/thread-lifecycle-communication",
+    "prerequisites": [
+      "concurrency/thread-pool"
+    ],
+    "related": [],
+    "next": [
+      "concurrency/cas-aba"
+    ]
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "categoryOrder": 3,
+    "slug": "cas-aba",
+    "order": 5,
+    "title": "CAS 的原理是什么？如何解决 ABA 问题？",
+    "description": "理解比较交换、原子类、自旋代价以及版本戳解决 ABA 的方式",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "进阶",
+    "file": "concurrency/cas-aba",
+    "prerequisites": [
+      "concurrency/volatile-happens-before"
+    ],
+    "related": [],
+    "next": [
+      "concurrency/threadlocal"
+    ]
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "categoryOrder": 3,
+    "slug": "threadlocal",
+    "order": 6,
+    "title": "ThreadLocal 的原理和内存泄漏问题是什么？",
+    "description": "理解线程本地变量、弱引用键、线程池复用与上下文清理",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "进阶",
+    "file": "concurrency/threadlocal",
+    "prerequisites": [
+      "concurrency/thread-pool"
+    ],
+    "related": [],
+    "next": [
+      "concurrency/completable-future"
+    ]
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "categoryOrder": 3,
+    "slug": "completable-future",
+    "order": 7,
+    "title": "CompletableFuture 如何实现异步任务编排？",
+    "description": "掌握异步转换、任务组合、异常处理和线程池隔离",
+    "updated": "2026-07-23",
+    "minutes": 43,
+    "level": "进阶",
+    "file": "concurrency/completable-future",
+    "prerequisites": [
+      "concurrency/thread-pool"
+    ],
+    "related": [],
+    "next": [
+      "concurrency/deadlock"
+    ]
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "categoryOrder": 3,
+    "slug": "deadlock",
+    "order": 8,
+    "title": "如何定位和避免 Java 死锁？",
+    "description": "从死锁四条件、线程转储、固定加锁顺序和超时获取锁系统分析",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "进阶",
+    "file": "concurrency/deadlock",
+    "prerequisites": [
+      "concurrency/locks-aqs"
+    ],
+    "related": [],
+    "next": [
+      "concurrency/java-memory-model"
+    ]
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "categoryOrder": 3,
+    "slug": "java-memory-model",
+    "order": 9,
+    "title": "Java 内存模型和 happens-before 规则是什么？",
+    "description": "从原子性、可见性、有序性和安全发布理解并发正确性",
+    "updated": "2026-07-23",
+    "minutes": 44,
+    "level": "进阶",
+    "file": "concurrency/java-memory-model",
+    "prerequisites": [
+      "concurrency/volatile-happens-before"
+    ],
+    "related": [],
+    "next": [
+      "concurrency/virtual-threads"
+    ]
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "categoryOrder": 3,
+    "slug": "virtual-threads",
+    "order": 10,
+    "title": "Java 虚拟线程适合解决什么问题？",
+    "description": "理解虚拟线程的轻量调度、阻塞式编程优势及固定线程和限流边界",
+    "updated": "2026-07-23",
+    "minutes": 43,
+    "level": "进阶",
+    "file": "concurrency/virtual-threads",
+    "prerequisites": [
+      "concurrency/thread-pool"
+    ],
+    "related": [
+      "concurrency/completable-future"
+    ],
+    "next": []
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "categoryOrder": 4,
+    "slug": "runtime-data-area",
+    "order": 1,
+    "title": "JVM 运行时数据区有哪些？",
+    "description": "线程私有区、共享区与常见内存异常",
+    "updated": "2026-07-23",
+    "minutes": 33,
+    "level": "基础",
+    "file": "jvm/runtime-data-area",
+    "prerequisites": [],
+    "related": [
+      "jvm/production-memory-sizing"
+    ],
+    "next": [
+      "jvm/gc-guide"
+    ]
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "categoryOrder": 4,
+    "slug": "gc-guide",
+    "order": 2,
+    "title": "JVM 垃圾回收算法与收集器选择",
+    "description": "从对象存活判定、分代回收到 G1 和 ZGC 的选择与排查",
+    "updated": "2026-07-23",
+    "minutes": 38,
+    "level": "进阶",
+    "file": "jvm/gc-guide",
+    "prerequisites": [
+      "jvm/runtime-data-area"
+    ],
+    "related": [
+      "jvm/production-memory-sizing"
+    ],
+    "next": [
+      "jvm/production-oom-troubleshooting"
+    ]
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "categoryOrder": 4,
+    "slug": "production-oom-troubleshooting",
+    "order": 3,
+    "title": "线上遇到 OOM 怎么排查和处理？",
+    "description": "通过缓存对象泄漏案例掌握 OOM 止损、Heap Dump 分析、根因修复和长期治理",
+    "updated": "2026-07-23",
+    "minutes": 52,
+    "level": "高级",
+    "file": "jvm/production-oom-troubleshooting",
+    "prerequisites": [
+      "jvm/runtime-data-area",
+      "jvm/gc-guide"
+    ],
+    "related": [],
+    "next": [
+      "jvm/production-memory-sizing"
+    ]
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "categoryOrder": 4,
+    "slug": "production-memory-sizing",
+    "order": 4,
+    "title": "线上 JVM 内存怎么配置？为什么这样配置？",
+    "description": "从容器总内存拆分 Heap、Metaspace、Direct Memory、线程栈和系统余量",
+    "updated": "2026-07-23",
+    "minutes": 54,
+    "level": "高级",
+    "file": "jvm/production-memory-sizing",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "categoryOrder": 4,
+    "slug": "class-loading",
+    "order": 5,
+    "title": "JVM 类加载过程是什么？",
+    "description": "掌握加载、链接、初始化的时机以及类初始化的线程安全保证",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "进阶",
+    "file": "jvm/class-loading",
+    "prerequisites": [
+      "jvm/runtime-data-area"
+    ],
+    "related": [],
+    "next": [
+      "jvm/classloader-delegation"
+    ]
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "categoryOrder": 4,
+    "slug": "classloader-delegation",
+    "order": 6,
+    "title": "双亲委派模型是什么？为什么要打破它？",
+    "description": "理解类加载器层次、类型身份、委派收益和 SPI 等特殊场景",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "进阶",
+    "file": "jvm/classloader-delegation",
+    "prerequisites": [
+      "jvm/class-loading"
+    ],
+    "related": [],
+    "next": [
+      "jvm/object-allocation"
+    ]
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "categoryOrder": 4,
+    "slug": "object-allocation",
+    "order": 7,
+    "title": "Java 对象是如何创建和分配内存的？",
+    "description": "从类检查、堆分配、对象头、TLAB 和构造初始化理解对象创建",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "进阶",
+    "file": "jvm/object-allocation",
+    "prerequisites": [
+      "jvm/runtime-data-area",
+      "jvm/class-loading"
+    ],
+    "related": [],
+    "next": [
+      "jvm/gc-tuning"
+    ]
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "categoryOrder": 4,
+    "slug": "gc-tuning",
+    "order": 8,
+    "title": "JVM GC 调优应该从哪里开始？",
+    "description": "以业务目标、GC 日志和运行指标驱动收集器与堆参数调优",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "高级",
+    "file": "jvm/gc-tuning",
+    "prerequisites": [
+      "jvm/gc-guide",
+      "jvm/production-memory-sizing"
+    ],
+    "related": [],
+    "next": [
+      "jvm/stack-metaspace-errors"
+    ]
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "categoryOrder": 4,
+    "slug": "stack-metaspace-errors",
+    "order": 9,
+    "title": "StackOverflowError 和 Metaspace OOM 如何排查？",
+    "description": "区分栈溢出、元空间耗尽的典型原因、证据和治理方式",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "进阶",
+    "file": "jvm/stack-metaspace-errors",
+    "prerequisites": [
+      "jvm/runtime-data-area",
+      "jvm/production-oom-troubleshooting"
+    ],
+    "related": [],
+    "next": [
+      "jvm/jit-compiler"
+    ]
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "categoryOrder": 4,
+    "slug": "jit-compiler",
+    "order": 10,
+    "title": "JIT 编译器如何优化 Java 代码？",
+    "description": "理解解释执行、分层编译、热点探测、内联和逃逸分析",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "进阶",
+    "file": "jvm/jit-compiler",
+    "prerequisites": [
+      "jvm/class-loading",
+      "jvm/object-allocation"
+    ],
+    "related": [
+      "jvm/gc-tuning"
+    ],
+    "next": []
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "categoryOrder": 5,
+    "slug": "btree-index",
+    "order": 1,
+    "title": "MySQL 为什么使用 B+Tree 索引？",
+    "description": "从磁盘 IO、树高和范围查询理解 InnoDB 索引",
+    "updated": "2026-07-23",
+    "minutes": 35,
+    "level": "进阶",
+    "file": "mysql/btree-index",
+    "prerequisites": [],
+    "related": [
+      "mysql/slow-sql-troubleshooting"
+    ],
+    "next": [
+      "mysql/transactions-mvcc",
+      "mysql/sql-execution-explain"
+    ]
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "categoryOrder": 5,
+    "slug": "transactions-mvcc",
+    "order": 2,
+    "title": "MySQL 事务隔离级别与 MVCC 原理",
+    "description": "从 ACID、Read View、Undo Log 到当前读和间隙锁系统理解事务",
+    "updated": "2026-07-23",
+    "minutes": 37,
+    "level": "进阶",
+    "file": "mysql/transactions-mvcc",
+    "prerequisites": [
+      "mysql/btree-index"
+    ],
+    "related": [],
+    "next": [
+      "mysql/locks-deadlock",
+      "mysql/redo-undo-binlog"
+    ]
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "categoryOrder": 5,
+    "slug": "sql-execution-explain",
+    "order": 3,
+    "title": "MySQL 一条 SQL 如何执行？EXPLAIN 怎么分析？",
+    "description": "从连接、解析、优化、执行到 EXPLAIN ANALYZE 系统定位慢 SQL",
+    "updated": "2026-07-23",
+    "minutes": 48,
+    "level": "进阶",
+    "file": "mysql/sql-execution-explain",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "categoryOrder": 5,
+    "slug": "locks-deadlock",
+    "order": 4,
+    "title": "MySQL 锁机制、死锁与线上排查详解",
+    "description": "掌握记录锁、间隙锁、Next-Key Lock、意向锁以及死锁诊断",
+    "updated": "2026-07-23",
+    "minutes": 46,
+    "level": "高级",
+    "file": "mysql/locks-deadlock",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "categoryOrder": 5,
+    "slug": "redo-undo-binlog",
+    "order": 5,
+    "title": "Redo Log、Undo Log 与 Binlog 有什么区别？",
+    "description": "从事务恢复、MVCC、复制与两阶段提交理解 MySQL 三大日志",
+    "updated": "2026-07-23",
+    "minutes": 44,
+    "level": "高级",
+    "file": "mysql/redo-undo-binlog",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "categoryOrder": 5,
+    "slug": "replication-high-availability",
+    "order": 6,
+    "title": "MySQL 主从复制、延迟与高可用设计",
+    "description": "从 Binlog 传输、并行回放、读写一致性到故障切换完整理解复制",
+    "updated": "2026-07-23",
+    "minutes": 46,
+    "level": "高级",
+    "file": "mysql/replication-high-availability",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "categoryOrder": 5,
+    "slug": "slow-sql-troubleshooting",
+    "order": 7,
+    "title": "线上遇到慢 SQL 应该怎么处理？",
+    "description": "从发现、止损、定位、优化到复盘，掌握慢 SQL 线上处理完整 SOP",
+    "updated": "2026-07-23",
+    "minutes": 46,
+    "level": "高级",
+    "file": "mysql/slow-sql-troubleshooting",
+    "prerequisites": [
+      "mysql/btree-index",
+      "mysql/sql-execution-explain"
+    ],
+    "related": [
+      "mysql/locks-deadlock"
+    ],
+    "next": [
+      "mysql/table-design-guide"
+    ]
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "categoryOrder": 5,
+    "slug": "table-design-guide",
+    "order": 8,
+    "title": "MySQL 数据库表应该怎么设计？",
+    "description": "从业务建模、字段类型、主键、索引到分表与在线变更系统设计表结构",
+    "updated": "2026-07-23",
+    "minutes": 59,
+    "level": "高级",
+    "file": "mysql/table-design-guide",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "categoryOrder": 5,
+    "slug": "deep-pagination",
+    "order": 9,
+    "title": "MySQL 深分页为什么慢？如何优化？",
+    "description": "从 OFFSET 扫描、回表成本和游标分页设计高性能翻页查询",
+    "updated": "2026-07-23",
+    "minutes": 44,
+    "level": "进阶",
+    "file": "mysql/deep-pagination",
+    "prerequisites": [
+      "mysql/btree-index",
+      "mysql/sql-execution-explain"
+    ],
+    "related": [],
+    "next": [
+      "mysql/sharding"
+    ]
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "categoryOrder": 5,
+    "slug": "sharding",
+    "order": 10,
+    "title": "MySQL 什么时候需要分库分表？怎么设计？",
+    "description": "从容量瓶颈、分片键、路由、扩容和跨分片查询设计分库分表方案",
+    "updated": "2026-07-23",
+    "minutes": 45,
+    "level": "高级",
+    "file": "mysql/sharding",
+    "prerequisites": [
+      "mysql/table-design-guide",
+      "mysql/replication-high-availability"
+    ],
+    "related": [
+      "architecture/distributed-id"
+    ],
+    "next": []
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "categoryOrder": 5.5,
+    "slug": "data-structures-use-cases",
+    "order": 1,
+    "title": "Redis 有哪些数据结构？分别适合什么场景？",
+    "description": "从底层编码、复杂度和典型业务理解 String、Hash、List、Set、ZSet 与高级结构",
+    "updated": "2026-07-23",
+    "minutes": 48,
+    "level": "进阶",
+    "file": "redis/data-structures-use-cases",
+    "prerequisites": [],
+    "related": [
+      "architecture/cache-consistency"
+    ],
+    "next": [
+      "redis/persistence-high-availability",
+      "redis/distributed-lock"
+    ]
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "categoryOrder": 5.5,
+    "slug": "persistence-high-availability",
+    "order": 2,
+    "title": "Redis 持久化和高可用是怎么实现的？",
+    "description": "掌握 RDB、AOF、主从复制、哨兵和 Cluster 的可靠性与故障切换",
+    "updated": "2026-07-23",
+    "minutes": 49,
+    "level": "高级",
+    "file": "redis/persistence-high-availability",
+    "prerequisites": [
+      "redis/data-structures-use-cases"
+    ],
+    "related": [],
+    "next": [
+      "redis/distributed-lock"
+    ]
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "categoryOrder": 5.5,
+    "slug": "distributed-lock",
+    "order": 3,
+    "title": "Redis 分布式锁应该怎么正确实现？",
+    "description": "从 SET NX PX、唯一锁值、Lua 解锁、续期到 Fencing Token 理解锁的边界",
+    "updated": "2026-07-23",
+    "minutes": 47,
+    "level": "高级",
+    "file": "redis/distributed-lock",
+    "prerequisites": [
+      "redis/data-structures-use-cases",
+      "redis/persistence-high-availability"
+    ],
+    "related": [
+      "architecture/idempotency"
+    ],
+    "next": []
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "categoryOrder": 5.5,
+    "slug": "cache-problems",
+    "order": 4,
+    "title": "Redis 缓存穿透、击穿和雪崩怎么解决？",
+    "description": "区分三类缓存故障的流量形态，并设计空值、互斥、随机过期和限流方案",
+    "updated": "2026-07-23",
+    "minutes": 45,
+    "level": "进阶",
+    "file": "redis/cache-problems",
+    "prerequisites": [
+      "redis/data-structures-use-cases"
+    ],
+    "related": [],
+    "next": [
+      "redis/expiration-eviction"
+    ]
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "categoryOrder": 5.5,
+    "slug": "expiration-eviction",
+    "order": 5,
+    "title": "Redis 过期删除和内存淘汰策略是什么？",
+    "description": "理解惰性删除、定期删除、maxmemory 策略以及 TTL 设计",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "进阶",
+    "file": "redis/expiration-eviction",
+    "prerequisites": [
+      "redis/data-structures-use-cases"
+    ],
+    "related": [],
+    "next": [
+      "redis/cache-consistency"
+    ]
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "categoryOrder": 5.5,
+    "slug": "cache-consistency",
+    "order": 6,
+    "title": "Redis 缓存与数据库一致性怎么保证？",
+    "description": "比较更新缓存、删除缓存、延迟双删和变更订阅的一致性边界",
+    "updated": "2026-07-23",
+    "minutes": 43,
+    "level": "进阶",
+    "file": "redis/cache-consistency",
+    "prerequisites": [
+      "redis/data-structures-use-cases"
+    ],
+    "related": [
+      "architecture/cache-consistency"
+    ],
+    "next": [
+      "redis/hot-key-big-key"
+    ]
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "categoryOrder": 5.5,
+    "slug": "hot-key-big-key",
+    "order": 7,
+    "title": "Redis 热 Key 和大 Key 如何发现与治理？",
+    "description": "从流量倾斜、内存结构、扫描工具和拆分策略治理热点与大对象",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "高级",
+    "file": "redis/hot-key-big-key",
+    "prerequisites": [
+      "redis/data-structures-use-cases"
+    ],
+    "related": [],
+    "next": [
+      "redis/cluster-sharding"
+    ]
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "categoryOrder": 5.5,
+    "slug": "cluster-sharding",
+    "order": 8,
+    "title": "Redis Cluster 的分片和故障转移原理是什么？",
+    "description": "理解哈希槽、请求重定向、主从复制、故障选举和扩缩容",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "高级",
+    "file": "redis/cluster-sharding",
+    "prerequisites": [
+      "redis/persistence-high-availability"
+    ],
+    "related": [],
+    "next": [
+      "redis/why-fast"
+    ]
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "categoryOrder": 5.5,
+    "slug": "why-fast",
+    "order": 9,
+    "title": "Redis 为什么快？单线程模型如何理解？",
+    "description": "从内存访问、事件循环、数据结构和 I/O 多线程解释 Redis 性能",
+    "updated": "2026-07-23",
+    "minutes": 43,
+    "level": "进阶",
+    "file": "redis/why-fast",
+    "prerequisites": [
+      "redis/data-structures-use-cases"
+    ],
+    "related": [],
+    "next": [
+      "redis/transactions-lua-pipeline"
+    ]
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "categoryOrder": 5.5,
+    "slug": "transactions-lua-pipeline",
+    "order": 10,
+    "title": "Redis 事务、Lua 和 Pipeline 有什么区别？",
+    "description": "比较批量发送、命令排队、乐观锁和服务端原子脚本的语义",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "进阶",
+    "file": "redis/transactions-lua-pipeline",
+    "prerequisites": [
+      "redis/data-structures-use-cases"
+    ],
+    "related": [
+      "redis/distributed-lock"
+    ],
+    "next": []
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "categoryOrder": 6,
+    "slug": "mergetree",
+    "order": 1,
+    "title": "ClickHouse MergeTree 引擎原理是什么？",
+    "description": "理解分区、排序键、数据片段与后台合并",
+    "updated": "2026-07-23",
+    "minutes": 35,
+    "level": "进阶",
+    "file": "clickhouse/mergetree",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "categoryOrder": 6,
+    "slug": "query-optimization",
+    "order": 2,
+    "title": "ClickHouse 查询优化实战指南",
+    "description": "从建表设计、数据裁剪、物化视图到查询日志定位性能瓶颈",
+    "updated": "2026-07-23",
+    "minutes": 38,
+    "level": "进阶",
+    "file": "clickhouse/query-optimization",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "categoryOrder": 6,
+    "slug": "advantages-limitations",
+    "order": 3,
+    "title": "ClickHouse 有哪些优势和不足？",
+    "description": "从列式存储、向量化执行、实时分析到事务与高并发限制全面评估 ClickHouse",
+    "updated": "2026-07-23",
+    "minutes": 51,
+    "level": "进阶",
+    "file": "clickhouse/advantages-limitations",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "categoryOrder": 6,
+    "slug": "production-optimization",
+    "order": 4,
+    "title": "ClickHouse 在项目中做过哪些优化？",
+    "description": "从建模、写入、查询、Merge、集群和监控回答 ClickHouse 项目优化经验",
+    "updated": "2026-07-23",
+    "minutes": 55,
+    "level": "高级",
+    "file": "clickhouse/production-optimization",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "categoryOrder": 6,
+    "slug": "concurrency-limitations",
+    "order": 5,
+    "title": "ClickHouse 为什么对高并发支持不足？",
+    "description": "从 OLAP 执行模型、线程、内存、IO 与后台合并解释 ClickHouse 并发边界",
+    "updated": "2026-07-23",
+    "minutes": 54,
+    "level": "高级",
+    "file": "clickhouse/concurrency-limitations",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "categoryOrder": 6,
+    "slug": "replacing-mergetree",
+    "order": 6,
+    "title": "ReplacingMergeTree 如何实现去重？",
+    "description": "理解后台合并去重、版本列、FINAL 查询及最终一致边界",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "进阶",
+    "file": "clickhouse/replacing-mergetree",
+    "prerequisites": [
+      "clickhouse/mergetree"
+    ],
+    "related": [],
+    "next": [
+      "clickhouse/partition-order-primary-key"
+    ]
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "categoryOrder": 6,
+    "slug": "partition-order-primary-key",
+    "order": 7,
+    "title": "ClickHouse 分区键、排序键和主键有什么区别？",
+    "description": "区分数据片段管理、物理排序和稀疏索引三类建模能力",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "进阶",
+    "file": "clickhouse/partition-order-primary-key",
+    "prerequisites": [
+      "clickhouse/mergetree"
+    ],
+    "related": [],
+    "next": [
+      "clickhouse/data-skipping-index"
+    ]
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "categoryOrder": 6,
+    "slug": "data-skipping-index",
+    "order": 8,
+    "title": "ClickHouse 跳数索引有什么作用？",
+    "description": "理解 minmax、set、Bloom Filter 等索引的裁剪原理和适用数据分布",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "进阶",
+    "file": "clickhouse/data-skipping-index",
+    "prerequisites": [
+      "clickhouse/partition-order-primary-key"
+    ],
+    "related": [],
+    "next": [
+      "clickhouse/distributed-table"
+    ]
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "categoryOrder": 6,
+    "slug": "distributed-table",
+    "order": 9,
+    "title": "ClickHouse Distributed 表如何分片和查询？",
+    "description": "理解本地表、分布式路由、分片键、副本选择和跨分片聚合",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "高级",
+    "file": "clickhouse/distributed-table",
+    "prerequisites": [
+      "clickhouse/mergetree",
+      "clickhouse/partition-order-primary-key"
+    ],
+    "related": [],
+    "next": [
+      "clickhouse/write-optimization"
+    ]
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "categoryOrder": 6,
+    "slug": "write-optimization",
+    "order": 10,
+    "title": "ClickHouse 写入为什么要批量？如何优化？",
+    "description": "从数据片段、后台合并、批量大小和异步写入治理写入吞吐",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "高级",
+    "file": "clickhouse/write-optimization",
+    "prerequisites": [
+      "clickhouse/mergetree"
+    ],
+    "related": [
+      "clickhouse/production-optimization"
+    ],
+    "next": []
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "categoryOrder": 7,
+    "slug": "consumer-group",
+    "order": 1,
+    "title": "Kafka 消费者组与分区如何协作？",
+    "description": "理解分区分配、消费位点、再均衡和重复消费",
+    "updated": "2026-07-23",
+    "minutes": 35,
+    "level": "进阶",
+    "file": "kafka/consumer-group",
+    "prerequisites": [],
+    "related": [
+      "kafka/message-backlog-troubleshooting"
+    ],
+    "next": [
+      "kafka/reliability",
+      "kafka/message-loss-prevention"
+    ]
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "categoryOrder": 7,
+    "slug": "reliability",
+    "order": 2,
+    "title": "Kafka 如何实现端到端可靠投递？",
+    "description": "串联生产、Broker、消费与数据库，设计可恢复的端到端投递链路",
+    "updated": "2026-07-23",
+    "minutes": 38,
+    "level": "进阶",
+    "file": "kafka/reliability",
+    "prerequisites": [
+      "kafka/consumer-group"
+    ],
+    "related": [],
+    "next": [
+      "kafka/message-loss-prevention",
+      "kafka/duplicate-consumption-idempotency"
+    ]
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "categoryOrder": 7,
+    "slug": "message-loss-prevention",
+    "order": 3,
+    "title": "Kafka 怎么保证消息不丢失？",
+    "description": "从生产者确认、副本同步、消费位点和故障演练建立端到端消息可靠性",
+    "updated": "2026-07-23",
+    "minutes": 48,
+    "level": "高级",
+    "file": "kafka/message-loss-prevention",
+    "prerequisites": [
+      "kafka/consumer-group",
+      "kafka/reliability"
+    ],
+    "related": [
+      "kafka/message-backlog-troubleshooting"
+    ],
+    "next": [
+      "kafka/duplicate-consumption-idempotency"
+    ]
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "categoryOrder": 7,
+    "slug": "duplicate-consumption-idempotency",
+    "order": 4,
+    "title": "Kafka 怎么保证不重复消费？",
+    "description": "理解重复消费来源，并使用唯一约束、状态机和幂等键保证业务结果只生效一次",
+    "updated": "2026-07-23",
+    "minutes": 52,
+    "level": "高级",
+    "file": "kafka/duplicate-consumption-idempotency",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "categoryOrder": 7,
+    "slug": "message-backlog-troubleshooting",
+    "order": 5,
+    "title": "Kafka 消息堆积时应该怎么处理？",
+    "description": "从紧急止损、Lag 定位、并行扩容到数据恢复系统处理 Kafka 消息积压",
+    "updated": "2026-07-23",
+    "minutes": 44,
+    "level": "高级",
+    "file": "kafka/message-backlog-troubleshooting",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "categoryOrder": 7,
+    "slug": "isr-leader-election",
+    "order": 6,
+    "title": "Kafka ISR 和 Leader 选举机制是什么？",
+    "description": "理解副本同步集合、确认条件、故障选举和可用性与可靠性的权衡",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "进阶",
+    "file": "kafka/isr-leader-election",
+    "prerequisites": [
+      "kafka/consumer-group",
+      "kafka/reliability"
+    ],
+    "related": [],
+    "next": [
+      "kafka/message-ordering"
+    ]
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "categoryOrder": 7,
+    "slug": "message-ordering",
+    "order": 7,
+    "title": "Kafka 如何保证消息顺序？",
+    "description": "从分区有序、消息 Key、生产者重试和消费者并发设计局部顺序",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "进阶",
+    "file": "kafka/message-ordering",
+    "prerequisites": [
+      "kafka/consumer-group"
+    ],
+    "related": [],
+    "next": [
+      "kafka/transactions-exactly-once"
+    ]
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "categoryOrder": 7,
+    "slug": "transactions-exactly-once",
+    "order": 8,
+    "title": "Kafka 事务和 Exactly-Once 语义如何实现？",
+    "description": "理解幂等生产者、事务写入、隔离级别及端到端恰好一次的边界",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "高级",
+    "file": "kafka/transactions-exactly-once",
+    "prerequisites": [
+      "kafka/reliability",
+      "kafka/duplicate-consumption-idempotency"
+    ],
+    "related": [],
+    "next": [
+      "kafka/zero-copy"
+    ]
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "categoryOrder": 7,
+    "slug": "zero-copy",
+    "order": 9,
+    "title": "Kafka 的零拷贝和顺序写为什么快？",
+    "description": "从追加日志、页缓存、批处理和 sendfile 理解 Kafka 高吞吐",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "进阶",
+    "file": "kafka/zero-copy",
+    "prerequisites": [
+      "kafka/consumer-group"
+    ],
+    "related": [],
+    "next": [
+      "kafka/partition-planning"
+    ]
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "categoryOrder": 7,
+    "slug": "partition-planning",
+    "order": 10,
+    "title": "Kafka 分区数应该如何规划和扩容？",
+    "description": "根据吞吐、消费并行度、顺序要求和 Broker 资源规划分区",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "高级",
+    "file": "kafka/partition-planning",
+    "prerequisites": [
+      "kafka/consumer-group",
+      "kafka/message-ordering"
+    ],
+    "related": [
+      "kafka/message-backlog-troubleshooting"
+    ],
+    "next": []
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "categoryOrder": 8,
+    "slug": "inverted-index",
+    "order": 1,
+    "title": "Elasticsearch 倒排索引原理是什么？",
+    "description": "从分词、词项字典和文档列表理解全文检索",
+    "updated": "2026-07-23",
+    "minutes": 35,
+    "level": "进阶",
+    "file": "elasticsearch/inverted-index",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "categoryOrder": 8,
+    "slug": "mapping-query",
+    "order": 2,
+    "title": "Elasticsearch Mapping、分词与查询选择",
+    "description": "掌握 text 和 keyword、动态映射、全文查询与精确查询的设计方法",
+    "updated": "2026-07-23",
+    "minutes": 37,
+    "level": "进阶",
+    "file": "elasticsearch/mapping-query",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "categoryOrder": 8,
+    "slug": "performance-troubleshooting",
+    "order": 3,
+    "title": "Elasticsearch 会遇到哪些性能问题？如何优化？",
+    "description": "从慢查询、写入抖动、分片、堆内存和集群负载系统排查 Elasticsearch 性能问题",
+    "updated": "2026-07-23",
+    "minutes": 63,
+    "level": "高级",
+    "file": "elasticsearch/performance-troubleshooting",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "categoryOrder": 8,
+    "slug": "shard-replica",
+    "order": 4,
+    "title": "Elasticsearch 分片和副本应该如何设计？",
+    "description": "从容量、并行度、故障恢复和堆开销规划主分片与副本",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "进阶",
+    "file": "elasticsearch/shard-replica",
+    "prerequisites": [
+      "elasticsearch/inverted-index"
+    ],
+    "related": [],
+    "next": [
+      "elasticsearch/cluster-election"
+    ]
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "categoryOrder": 8,
+    "slug": "cluster-election",
+    "order": 5,
+    "title": "Elasticsearch 集群选主和脑裂如何处理？",
+    "description": "理解 master-eligible 节点、多数派决策、集群状态发布和故障恢复",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "高级",
+    "file": "elasticsearch/cluster-election",
+    "prerequisites": [
+      "elasticsearch/shard-replica"
+    ],
+    "related": [],
+    "next": [
+      "elasticsearch/write-search-process"
+    ]
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "categoryOrder": 8,
+    "slug": "write-search-process",
+    "order": 6,
+    "title": "Elasticsearch 写入和搜索流程是什么？",
+    "description": "串联协调节点、主分片、副本、scatter-gather 和相关性排序",
+    "updated": "2026-07-23",
+    "minutes": 43,
+    "level": "进阶",
+    "file": "elasticsearch/write-search-process",
+    "prerequisites": [
+      "elasticsearch/inverted-index",
+      "elasticsearch/shard-replica"
+    ],
+    "related": [],
+    "next": [
+      "elasticsearch/deep-pagination"
+    ]
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "categoryOrder": 8,
+    "slug": "deep-pagination",
+    "order": 7,
+    "title": "Elasticsearch 深分页有哪些解决方案？",
+    "description": "比较 from-size、search_after、PIT、scroll 的成本和适用场景",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "进阶",
+    "file": "elasticsearch/deep-pagination",
+    "prerequisites": [
+      "elasticsearch/write-search-process"
+    ],
+    "related": [],
+    "next": [
+      "elasticsearch/near-real-time"
+    ]
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "categoryOrder": 8,
+    "slug": "near-real-time",
+    "order": 8,
+    "title": "Elasticsearch 为什么是近实时搜索？",
+    "description": "理解 refresh、flush、translog 和 segment merge 的不同职责",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "进阶",
+    "file": "elasticsearch/near-real-time",
+    "prerequisites": [
+      "elasticsearch/write-search-process"
+    ],
+    "related": [],
+    "next": [
+      "elasticsearch/data-consistency"
+    ]
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "categoryOrder": 8,
+    "slug": "data-consistency",
+    "order": 9,
+    "title": "Elasticsearch 如何处理并发更新和数据一致性？",
+    "description": "理解乐观并发控制、版本冲突、主副本复制及数据库同步方案",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "高级",
+    "file": "elasticsearch/data-consistency",
+    "prerequisites": [
+      "elasticsearch/write-search-process"
+    ],
+    "related": [],
+    "next": [
+      "elasticsearch/index-lifecycle"
+    ]
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "categoryOrder": 8,
+    "slug": "index-lifecycle",
+    "order": 10,
+    "title": "Elasticsearch 索引生命周期和冷热分层怎么设计？",
+    "description": "使用 rollover、ILM、数据层级和快照管理时间序列数据成本",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "高级",
+    "file": "elasticsearch/index-lifecycle",
+    "prerequisites": [
+      "elasticsearch/shard-replica"
+    ],
+    "related": [
+      "elasticsearch/performance-troubleshooting"
+    ],
+    "next": []
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "categoryOrder": 9,
+    "slug": "cache-consistency",
+    "order": 1,
+    "title": "缓存与数据库一致性如何保证？",
+    "description": "从 Cache Aside、延迟双删和消息通知理解一致性取舍",
+    "updated": "2026-07-23",
+    "minutes": 36,
+    "level": "高级",
+    "file": "architecture/cache-consistency",
+    "prerequisites": [],
+    "related": [
+      "redis/data-structures-use-cases",
+      "architecture/flash-sale-system-design"
+    ],
+    "next": [
+      "architecture/idempotency"
+    ]
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "categoryOrder": 9,
+    "slug": "idempotency",
+    "order": 2,
+    "title": "分布式系统如何设计幂等接口？",
+    "description": "从重复请求来源、唯一键、状态机和幂等令牌设计可靠接口",
+    "updated": "2026-07-23",
+    "minutes": 39,
+    "level": "高级",
+    "file": "architecture/idempotency",
+    "prerequisites": [
+      "architecture/cache-consistency"
+    ],
+    "related": [
+      "redis/distributed-lock"
+    ],
+    "next": [
+      "architecture/flash-sale-system-design",
+      "architecture/config-distribution-gray-release"
+    ]
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "categoryOrder": 9,
+    "slug": "flash-sale-system-design",
+    "order": 3,
+    "title": "如何设计一个高并发秒杀系统？",
+    "description": "从流量削峰、库存预扣、异步下单、防超卖和容灾完整设计秒杀系统",
+    "updated": "2026-07-23",
+    "minutes": 55,
+    "level": "高级",
+    "file": "architecture/flash-sale-system-design",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "categoryOrder": 9,
+    "slug": "config-distribution-gray-release",
+    "order": 4,
+    "title": "如何设计支持灰度的线上配置分发系统？",
+    "description": "设计及时推送、版本一致、部分服务灰度、确认回执和快速回滚的配置中心",
+    "updated": "2026-07-23",
+    "minutes": 66,
+    "level": "高级",
+    "file": "architecture/config-distribution-gray-release",
+    "prerequisites": [],
+    "related": [],
+    "next": []
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "categoryOrder": 9,
+    "slug": "distributed-transaction",
+    "order": 5,
+    "title": "分布式事务有哪些解决方案？",
+    "description": "比较 2PC、TCC、Saga 和可靠消息的适用边界与工程成本",
+    "updated": "2026-07-23",
+    "minutes": 43,
+    "level": "高级",
+    "file": "architecture/distributed-transaction",
+    "prerequisites": [
+      "architecture/idempotency"
+    ],
+    "related": [],
+    "next": [
+      "architecture/rate-limiting"
+    ]
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "categoryOrder": 9,
+    "slug": "rate-limiting",
+    "order": 6,
+    "title": "高并发系统如何设计限流？",
+    "description": "比较固定窗口、滑动窗口、漏桶和令牌桶并设计多层限流",
+    "updated": "2026-07-23",
+    "minutes": 41,
+    "level": "高级",
+    "file": "architecture/rate-limiting",
+    "prerequisites": [
+      "architecture/flash-sale-system-design"
+    ],
+    "related": [],
+    "next": [
+      "architecture/resilience"
+    ]
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "categoryOrder": 9,
+    "slug": "resilience",
+    "order": 7,
+    "title": "熔断、降级、超时和重试应该如何配合？",
+    "description": "通过调用预算、退避重试、熔断状态机和降级策略防止级联故障",
+    "updated": "2026-07-23",
+    "minutes": 42,
+    "level": "高级",
+    "file": "architecture/resilience",
+    "prerequisites": [
+      "architecture/rate-limiting",
+      "architecture/idempotency"
+    ],
+    "related": [],
+    "next": [
+      "architecture/distributed-id"
+    ]
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "categoryOrder": 9,
+    "slug": "distributed-id",
+    "order": 8,
+    "title": "分布式唯一 ID 有哪些生成方案？",
+    "description": "比较 UUID、数据库号段、Redis 自增和雪花算法的顺序性与可用性",
+    "updated": "2026-07-23",
+    "minutes": 43,
+    "level": "进阶",
+    "file": "architecture/distributed-id",
+    "prerequisites": [
+      "architecture/idempotency"
+    ],
+    "related": [],
+    "next": [
+      "architecture/delayed-task"
+    ]
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "categoryOrder": 9,
+    "slug": "delayed-task",
+    "order": 9,
+    "title": "延时任务系统应该如何设计？",
+    "description": "比较定时扫描、延迟队列和时间轮，并处理可靠投递、幂等与取消",
+    "updated": "2026-07-23",
+    "minutes": 43,
+    "level": "高级",
+    "file": "architecture/delayed-task",
+    "prerequisites": [
+      "architecture/idempotency"
+    ],
+    "related": [],
+    "next": [
+      "architecture/observability"
+    ]
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "categoryOrder": 9,
+    "slug": "observability",
+    "order": 10,
+    "title": "分布式系统的可观测性应该如何设计？",
+    "description": "用指标、日志、链路和业务事件建立从发现到定位再到验证的闭环",
+    "updated": "2026-07-23",
+    "minutes": 44,
+    "level": "高级",
+    "file": "architecture/observability",
+    "prerequisites": [
+      "architecture/resilience"
+    ],
+    "related": [
+      "architecture/config-distribution-gray-release"
+    ],
+    "next": []
+  }
+]

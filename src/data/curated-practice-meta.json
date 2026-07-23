@@ -1,0 +1,62 @@
+[
+  {
+    "id": "latency-thread-pool-incident",
+    "sourceRef": "architecture/observability",
+    "durationMinutes": 3,
+    "type": "incident",
+    "prompt": "线上接口 P99 从 200ms 上升到 5 秒，服务器 CPU 不高，但线程池队列持续增长，数据库连接池也逐渐被占满。你会如何定位和处理？",
+    "shortAnswer": "我会先限制异常接口和重试流量，再把线程池排队、连接等待、SQL 与下游调用分段计时，用同一时间线找到真正的最窄资源。",
+    "diagram": {
+      "kind": "timeline",
+      "title": "排查与恢复时间线",
+      "nodes": ["确认影响范围", "限制流量与重试", "分段采集耗时", "修复最窄资源", "灰度恢复"]
+    }
+  },
+  {
+    "id": "thread-pool-execute-flow",
+    "sourceRef": "concurrency/thread-pool",
+    "durationMinutes": 3,
+    "type": "project",
+    "prompt": "ThreadPoolExecutor 的核心参数如何配合？一个任务提交后会经过哪些判断？",
+    "shortAnswer": "我会先根据任务类型和下游容量确定线程数，再用有界队列、明确拒绝策略和业务隔离控制过载，最后通过排队时间与拒绝率验证。"
+  },
+  {
+    "id": "jvm-oom-troubleshooting",
+    "sourceRef": "jvm/production-oom-troubleshooting",
+    "durationMinutes": 3,
+    "type": "incident",
+    "prompt": "线上 Java 进程发生 OOM，你会如何判断是哪块内存出了问题并完成定位？",
+    "shortAnswer": "我会先摘流保护业务并保留现场，再根据 OOM 类型分别检查堆、元空间、直接内存和线程资源，修复后用相同流量验证内存能够回落。",
+    "diagram": {
+      "kind": "timeline",
+      "title": "排查与恢复时间线",
+      "nodes": ["摘流保护现场", "确认 OOM 类型", "分析对应内存区", "修复泄漏或容量", "复现并验证"]
+    }
+  },
+  {
+    "id": "mysql-index-not-used",
+    "sourceRef": "mysql/btree-index",
+    "durationMinutes": 3,
+    "type": "incident",
+    "prompt": "MySQL 明明建了索引，查询为什么仍可能走全表扫描？你会怎么分析？",
+    "shortAnswer": "我不会看到全表扫描就强制索引，而会用真实参数和 EXPLAIN ANALYZE 对比估算与实际行数，再检查 SQL 写法、选择性、回表和统计信息。",
+    "diagram": {
+      "kind": "timeline",
+      "title": "SQL 优化路径",
+      "nodes": ["确认慢 SQL 参数", "分析实际执行计划", "定位扫描与回表", "调整 SQL 或索引", "压测验证写读成本"]
+    }
+  },
+  {
+    "id": "redis-cache-consistency",
+    "sourceRef": "redis/cache-consistency",
+    "durationMinutes": 3,
+    "type": "design",
+    "prompt": "更新数据库和缓存时，如何尽量保证数据一致性？为什么通常选择先更新数据库再删除缓存？",
+    "shortAnswer": "我会以数据库为权威源，采用提交数据库后删除缓存，并通过 outbox 或 binlog 可靠重试删除，配合版本、TTL 和回源保护控制不一致窗口。",
+    "diagram": {
+      "kind": "flow",
+      "title": "一致性主链路",
+      "nodes": ["提交数据库事务", "记录变更事件", "幂等删除缓存", "读取数据库回填", "监控延迟与补偿"]
+    }
+  }
+]

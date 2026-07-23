@@ -1,0 +1,15 @@
+@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+@keyframes articleIn{from{opacity:0;transform:translateY(16px) scale(.992)}to{opacity:1;transform:none}}
+
+@keyframes reveal{from{opacity:0;transform:scaleY(.94)}to{opacity:1;transform:none}}
+
+.reveal-item{opacity:0;transform:translateY(15px);transition:opacity .52s ease,transform .52s cubic-bezier(.2,.75,.3,1)}
+
+.reveal-item.is-visible{opacity:1;transform:none}
+
+@keyframes maskIn{from{opacity:0}to{opacity:1}}
+
+@keyframes skeleton{from{background-position:200% 0}to{background-position:-200% 0}}
+
+@keyframes spin{to{transform:rotate(360deg)}}
