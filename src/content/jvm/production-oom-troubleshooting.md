@@ -6,7 +6,7 @@ categoryOrder: 4
 order: 3
 description: 通过缓存对象泄漏案例掌握 OOM 止损、Heap Dump 分析、根因修复和长期治理
 updated: 2026-07-23
-minutes: 52
+minutes: 16
 level: 高级
 prerequisites: [jvm/runtime-data-area, jvm/gc-guide]
 next: [jvm/production-memory-sizing]
@@ -14,20 +14,11 @@ next: [jvm/production-memory-sizing]
 
 # 线上遇到 OOM 怎么排查和处理？
 
-## 一句话回答
+## 先说结论
 
 > 线上 OOM 首先要保障业务并保存现场，结合异常类型判断 Heap、Metaspace、Direct Memory、线程或 Native Memory 哪个区域耗尽；然后通过 Heap Dump、GC 日志、对象直方图、线程栈和容器指标定位根因，修复后还要压测、灰度并建立内存水位和自动取证机制。
 
-## 面试考察点
-
-- 能否区分不同 `OutOfMemoryError`，而不是统一回答“堆不够”。
-- 是否知道扩容和重启只能止损，不能代替根因分析。
-- 能否在重启前保存关键现场，同时避免 Dump 再次压垮磁盘。
-- 是否会从 Dominator Tree、Retained Size 和 GC Roots 找泄漏链路。
-- 能否解释内存泄漏、内存溢出和瞬时流量峰值的区别。
-- 是否具备修复、验证、灰度和长期治理的完整闭环。
-
-## 一个可用于面试的线上案例
+## 先看一个线上案例
 
 > 某营销系统发布新版本后运行约 8 小时，Pod 内存持续上涨，老年代占用从 40% 增长到 90%，Full GC 越来越频繁但每次回收很少，最后出现 `OutOfMemoryError: Java heap space` 并被容器重启。分析 Heap Dump 后发现一个用于保存活动规则的本地 ConcurrentHashMap 占据约 65% Retained Heap，Key 中包含活动 ID 和用户分群版本，但旧版本发布后从未清理。修复方式是使用有容量和过期策略的缓存、发布后主动失效旧版本，并增加缓存大小和老年代增长告警。
 
@@ -262,7 +253,7 @@ Path to GC Roots 显示 Map 被 Spring 单例 Bean 持有，实例生命周期�
 - 定期演练 OOM 自动取证和实例摘除。
 - Heap Dump 加密保存并设置自动清理周期。
 
-## 常见误区
+## 容易踩坑的地方
 
 - OOM 就是堆太小。
 - 重启恢复后事故已经结束。
@@ -272,16 +263,7 @@ Path to GC Roots 显示 Map 被 Spring 单例 Bean 持有，实例生命周期�
 - 容器 Limit 等于可全部分配给 `Xmx`。
 - 看到 exit code 137 就只增加堆。
 
-## 核心考点清单
-
-- 先区分 JVM OOM 和容器 OOMKilled，再判断具体内存区域。
-- 线上处理顺序是止损、保存证据、定位、修复和验证。
-- Heap 泄漏重点分析 Dominator Tree、Retained Size 和 GC Roots。
-- Full GC 后基线持续增长是泄漏的重要信号。
-- Heap 之外还有 Metaspace、Direct Memory、线程栈和 Native Memory。
-- 扩容与重启只能临时恢复，必须建立长期内存治理。
-
-## 高频追问与参考回答
+## 常见问题
 
 ### 追问 1：线上 OOM 后能直接重启吗？
 
@@ -306,75 +288,3 @@ Path to GC Roots 显示 Map 被 Spring 单例 Bean 持有，实例生命周期�
 ### 追问 6：内存泄漏修复后如何证明有效？
 
 使用同等数据和流量运行超过原故障周期，观察 Full GC 后老年代基线稳定、目标对象数量有界、缓存淘汰正常，并在灰度中持续验证 RSS 与 GC 指标。
-
-<!-- depth-standard:start -->
-## 源码与实现定位
-
-| 入口 | 阅读重点 |
-| --- | --- |
-| -XX:+HeapDumpOnOutOfMemoryError | 堆 OOM 自动现场 |
-| jcmd VM.native_memory / GC.class_histogram | native 与堆快速分类 |
-
-源码或系统表应按上表顺序追踪：先确认入口实际走到哪条路径，再用运行时数据验证，而不是仅凭类名或配置推测。
-
-## 参数配置与可复现实验
-
-```shell
-java -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/dumps   -XX:StartFlightRecording=filename=/dumps/app.jfr,maxage=30m   -XX:NativeMemoryTracking=summary -jar app.jar
-```
-
-分别制造 heap、Metaspace、direct buffer 和线程 OOM，验证每类是否产出足够证据且 dump 路径容量可用。
-
-## 验证步骤与预期结果
-
-### 1. 固定输入和基线
-
-先在没有故障注入的环境执行上述配置，固定数据规模、并发度、运行时版本和预热时间。以「dump 成功率」为主基线，记录值应满足「演练 100%」；同时保存 GC 后堆基线、进程 RSS/cgroup usage，使后续变化能够回到同一时间轴比较。
-
-### 2. 从实现入口确认路径
-
-在「-XX:+HeapDumpOnOutOfMemoryError」确认请求确实进入「堆 OOM 自动现场」对应的实现，再沿「jcmd VM.native_memory / GC.class_histogram」观察「native 与堆快速分类」。如果入口路径都未命中，就不应继续调整下游参数，而应先检查调用条件、版本或路由是否与假设一致。
-
-### 3. 注入本文特有的失败模式
-
-优先复现「事故发生后自动重启覆盖唯一现场」，并把单一变量逐级放大，直到「dump 成功率」越过「事故无文件」。随后再分别验证「只分析堆却忽略 RSS 与 cgroup」和「dump 过程中磁盘写满造成二次故障」，三类故障分开执行，避免多个变量同时变化而无法归因。
-
-### 4. 执行止损和根因修复
-
-第一轮只应用「先保存现场再重启」，确认它能控制影响范围；第二轮应用「按 OOM 区域选工具」，验证核心链路恢复；最后落实「dump 目录独立限额并自动转存」，消除同类问题再次出现的条件。每一步都保留变更前后数据，不用“感觉变快了”替代测量。
-
-### 5. 通过退出条件
-
-实验只有同时满足三项才算通过：「dump 成功率」回到「演练 100%」、「GC 后堆斜率」回到「稳定」、「RSS-Xmx」回到「可解释」，并且业务结果差异为零。若性能恢复但结果不一致，仍应视为失败；若指标恢复后很快再次越线，则说明只完成了临时止损，没有消除根因。
-
-## 量化基线
-
-| 指标 | 样例基线/口径 | 风险线 | 结论 |
-| --- | --- | --- | --- |
-| dump 成功率 | 演练 100% | 事故无文件 | 修复权限/磁盘 |
-| GC 后堆斜率 | 稳定 | 分钟级持续上升 | 对象泄漏 |
-| RSS-Xmx | 可解释 | 逼近容器余量 | native/线程 |
-
-这些数值是实验口径或示例告警线，不是可复制到所有系统的固定答案；上线阈值应由本系统稳态、峰值和故障演练共同确定。
-
-## 事故复盘：堆使用不高但容器反复 OOMKilled
-
-网络服务的池化直接内存与线程栈持续增长，Xmx 只占容器限制的一半，监控却只采集 Java 堆。结合 cgroup memory.events、NMT 和线程数后确认本地内存超限，限制直接内存与并发连接才修复。
-
-| 失败模式 | 首要证据 | 第一处置动作 |
-| --- | --- | --- |
-| 事故发生后自动重启覆盖唯一现场 | GC 后堆基线 | 先保存现场再重启 |
-| 只分析堆却忽略 RSS 与 cgroup | 进程 RSS/cgroup usage | 按 OOM 区域选工具 |
-| dump 过程中磁盘写满造成二次故障 | 类加载器与线程数 | dump 目录独立限额并自动转存 |
-
-## 发布与回滚检查点
-
-- **发布前**：确认「-XX:+HeapDumpOnOutOfMemoryError」对应实现和上述配置在目标版本仍然有效，并保存「dump 成功率」基线。
-- **灰度中**：同时观察 GC 后堆基线、进程 RSS/cgroup usage、类加载器与线程数；任一指标越过表中风险线，就停止继续扩量。
-- **回滚时**：先执行「先保存现场再重启」控制影响，再回退代码或参数；涉及持久状态时必须额外核对结果差异。
-- **发布后**：至少覆盖一个完整峰值周期，确认「事故发生后自动重启覆盖唯一现场」没有再次出现，才关闭变更观察窗口。
-
-## 设计边界与工程取舍
-
-> OOM 是某个内存区域无法满足分配，不等于 Java 堆一定泄漏；诊断必须先确定区域，再用该区域对应的证据工具。
-<!-- depth-standard:end -->

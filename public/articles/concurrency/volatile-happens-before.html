@@ -1,0 +1,37 @@
+<h2>先说结论</h2>
+<blockquote>
+<p>对 volatile 变量的写入 happens-before 后续对该变量的读取，编译器和处理器不能随意重排跨越 volatile 访问的操作；但一次读改写仍然可能被多个线程交错执行，所以不保证复合操作原子性。</p>
+</blockquote>
+<pre><code class="language-java">private volatile boolean started;
+
+void start() { started = true; }
+void awaitStart() {
+    while (!started) { /* 等待 */ }
+}
+</code></pre>
+<p>一个线程写入 <code>started</code> 后，另一个线程最终能够观察到新值。volatile 适合状态标志、配置刷新和发布不可变对象引用等场景。</p>
+<h2>三个并发性质</h2>
+<h3>可见性</h3>
+<p>一个线程修改共享变量后，其他线程能够读取到修改结果。volatile 建立了针对该变量的同步关系。</p>
+<h3>有序性</h3>
+<p>编译器和处理器可能对不影响单线程结果的指令重排。volatile 访问具有更强的排序约束，可阻止部分重排导致的跨线程观察异常。</p>
+<h3>原子性</h3>
+<p><code>i++</code> 包含读、加一、写回三个步骤。即使 <code>i</code> 是 volatile，多个线程仍可能读到同一个旧值，最后互相覆盖，所以结果不一定正确。</p>
+<h2>volatile 与 synchronized 的区别</h2>
+<p>volatile 不提供互斥锁，适合一个线程写、多个线程读的简单状态；synchronized 同时提供互斥、可见性和有序性，适合保护不变量和多步临界区。需要计数、扣库存等复合操作时，应使用锁或原子类。</p>
+<h2>容易踩坑的地方</h2>
+<ul>
+<li>volatile 不是“轻量级 synchronized”的完全替代品。</li>
+<li>volatile 只能保证对同一个变量的特殊内存语义，不会自动保护关联字段。</li>
+<li>看到 <code>volatile</code> 并不能推断业务逻辑整体线程安全。</li>
+</ul>
+<h2>参考资料</h2>
+<ul>
+<li><a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html">Java Language Specification 17.4 Memory Model</a></li>
+<li><a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html">Java Language Specification 8.3.1.4 volatile Fields</a></li>
+</ul>
+<h2>常见问题</h2>
+<h3>追问：双重检查单例为什么需要 volatile？</h3>
+<p>对象创建可抽象为分配、初始化、发布引用。volatile 防止引用在初始化完成前被其他线程观察，并建立正确可见性。</p>
+<h3>追问：volatile 数组能保证元素更新可见吗？</h3>
+<p>只保证数组引用本身的 volatile 读写。直接修改元素不是对该引用的写，元素并发访问仍需原子数组、锁等机制。</p>

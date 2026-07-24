@@ -1,42 +1,35 @@
 <script setup lang="ts">
 import {computed,nextTick,onBeforeUnmount,onMounted,ref,watch} from 'vue'
 import {useRoute,useRouter} from 'vue-router'
-import {marked} from 'marked'
-import {articleByRef,articles,articlePath,categories,loadArticleSource,prefetchArticle,type Article,type SearchEntry} from '../catalog'
+import {articleByRef,articles,articlePath,categories,loadArticleHtml,prefetchArticle,type Article,type SearchEntry} from '../catalog'
 
 const route=useRoute(),router=useRouter()
 const query=ref(''),catalogOpen=ref(false),outlineOpen=ref(false),activeHeading=ref('')
 const expanded=ref(new Set<string>()),readingProgress=ref(0),showBackTop=ref(false)
 const searchInput=ref<HTMLInputElement>(),searchFocused=ref(false)
 const searchHistory=ref<string[]>([]),searchIndex=ref<SearchEntry[]>([]),searchLoading=ref(false)
-const source=ref(''),articleLoading=ref(true),articleError=ref('')
-let revealObserver:IntersectionObserver|undefined,restoringProgress=true,searchBlurTimer:number|undefined,restoreTimer:number|undefined,navigateFromLink=false,contentRequest=0
+const html=ref(''),articleLoading=ref(true),articleError=ref('')
+let revealObserver:IntersectionObserver|undefined,restoringProgress=true,searchBlurTimer:number|undefined,restoreTimer:number|undefined,prefetchTimer:number|undefined,navigateFromLink=false,contentRequest=0
 
 const article=computed(()=>articles.find(a=>a.slug===route.params.slug&&a.categorySlug===route.params.category)||articles[0])
-const outline=computed(()=>[...source.value.matchAll(/^##\s+(.+)$/gm)].map((m,i)=>({id:`section-${i}`,title:m[1]})))
-const html=computed(()=>marked.parse(source.value.replace(/^#\s+.+\n+/,'')) as string)
+const allHeadings=computed(()=>article.value.headings.map((title,index)=>({id:`section-${index}`,title,index})))
+const outline=computed(()=>{
+  const items=allHeadings.value
+  if(items.length<=7)return items
+  const broad=/(?:结论|目标|总体|原理|流程|模型|设计|怎么|如何|选择|对比|排查|优化|故障|案例|建议|边界|问题|踩坑)/
+  const candidates=items.filter((item,index)=>index>0&&index<items.length-1&&broad.test(item.title))
+  const chosen=new Set<number>([0,items.length-1])
+  const addEvenly=(pool:typeof items,count:number)=>{
+    if(!pool.length||count<=0)return
+    if(count===1){chosen.add(pool[Math.floor(pool.length/2)].index);return}
+    for(let i=0;i<count;i++)chosen.add(pool[Math.round(i*(pool.length-1)/(count-1))].index)
+  }
+  addEvenly(candidates,Math.min(5,candidates.length))
+  if(chosen.size<7)addEvenly(items.filter(item=>!chosen.has(item.index)),7-chosen.size)
+  return items.filter(item=>chosen.has(item.index)).slice(0,7)
+})
 const index=computed(()=>articles.findIndex(a=>a.slug===article.value.slug&&a.categorySlug===article.value.categorySlug))
 const previous=computed(()=>articles[index.value-1]),next=computed(()=>articles[index.value+1])
-
-const templateRules=[
-  {label:'一句话回答',pattern:/一句话|核心答案|结论先行|先纠正|核心思路/},
-  {label:'核心考点',pattern:/核心考点|面试考察|面试要点/},
-  {label:'原理拆解',pattern:/原理|结构|模型|机制|为什么/},
-  {label:'执行流程',pattern:/流程|过程|链路|执行|写入/},
-  {label:'实战案例',pattern:/实战|案例|排查|优化|选择|建议/},
-  {label:'常见误区',pattern:/误区|错误|反模式|不足|注意|陷阱/},
-  {label:'高频追问',pattern:/追问/},
-  {label:'总结速记',pattern:/总结|小结|速记/}
-]
-const learningMap=computed(()=>templateRules.map(rule=>{
-  const target=outline.value.find(item=>rule.pattern.test(item.title))
-  return{...rule,id:target?.id||'',sourceTitle:target?.title||''}
-}))
-const quickPoints=computed(()=>{
-  const match=source.value.match(/##\s+(?:核心考点[^\n]*)\n([\s\S]*?)(?=\n##\s|$)/)
-  const points=(match?.[1]||'').split('\n').map(x=>x.replace(/^[-*\d.\s]+/,'').trim()).filter(Boolean)
-  return points.slice(0,4)
-})
 
 function escapeHtml(value:string){return value.replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]!))}
 function escapeRegExp(value:string){return value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
@@ -117,9 +110,9 @@ function handleShortcut(event:KeyboardEvent){
 
 const progressKey=()=>`reading-progress:${article.value.categorySlug}/${article.value.slug}`
 function updateReading(){
-  let id=outline.value[0]?.id||''
-  document.querySelectorAll<HTMLElement>('.article-body h2').forEach(h=>{if(h.getBoundingClientRect().top<150)id=h.id})
-  activeHeading.value=id
+  let currentIndex=0
+  document.querySelectorAll<HTMLElement>('.article-body h2').forEach((h,index)=>{if(h.getBoundingClientRect().top<150)currentIndex=index})
+  activeHeading.value=[...outline.value].reverse().find(item=>item.index<=currentIndex)?.id||outline.value[0]?.id||''
   const articleEl=document.querySelector<HTMLElement>('.article')
   if(!articleEl)return
   const distance=Math.max(1,articleEl.scrollHeight-window.innerHeight+120)
@@ -194,6 +187,12 @@ function setupReveal(){
   revealObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');revealObserver?.unobserve(entry.target)}}),{rootMargin:'0px 0px -7% 0px',threshold:.03})
   targets.forEach(el=>{el.classList.add('reveal-item');revealObserver?.observe(el)})
 }
+function scheduleAdjacentPrefetch(){
+  const connection=(navigator as Navigator&{connection?:{saveData?:boolean;effectiveType?:string}}).connection
+  if(connection?.saveData||/2g/.test(connection?.effectiveType||''))return
+  if(prefetchTimer)window.clearTimeout(prefetchTimer)
+  prefetchTimer=window.setTimeout(()=>{prefetchArticle(previous.value);prefetchArticle(next.value)},1200)
+}
 async function enhance(){
   await nextTick()
   document.querySelectorAll<HTMLElement>('.article-body h2').forEach((h,i)=>h.id=`section-${i}`)
@@ -217,20 +216,21 @@ async function enhance(){
 watch(query,value=>{if(value.trim())void ensureSearchIndex()})
 watch(()=>`${route.params.category}/${route.params.slug}`,async()=>{
   const request=++contentRequest,target=article.value
+  if(prefetchTimer)window.clearTimeout(prefetchTimer)
   updateDocumentSeo(target)
-  restoringProgress=true;expanded.value=new Set([...expanded.value,target.category]);articleLoading.value=true;articleError.value='';source.value=''
+  restoringProgress=true;expanded.value=new Set([...expanded.value,target.category]);articleLoading.value=true;articleError.value='';html.value=''
   try{
-    const loaded=await loadArticleSource(target)
+    const loaded=await loadArticleHtml(target)
     if(request!==contentRequest)return
-    source.value=loaded;articleLoading.value=false
-    await enhance();prefetchArticle(previous.value);prefetchArticle(next.value)
+    html.value=loaded;articleLoading.value=false
+    await enhance();scheduleAdjacentPrefetch()
   }catch(error){if(request===contentRequest){articleLoading.value=false;articleError.value=error instanceof Error?error.message:'文章加载失败'}}
 },{immediate:true})
 onMounted(()=>{
   history.scrollRestoration='manual';window.addEventListener('scroll',updateReading,{passive:true});window.addEventListener('keydown',handleShortcut)
   try{searchHistory.value=JSON.parse(localStorage.getItem('knowledge-search-history')||'[]')}catch{searchHistory.value=[]}
 })
-onBeforeUnmount(()=>{window.removeEventListener('scroll',updateReading);window.removeEventListener('keydown',handleShortcut);if(searchBlurTimer)window.clearTimeout(searchBlurTimer);if(restoreTimer)window.clearTimeout(restoreTimer);revealObserver?.disconnect()})
+onBeforeUnmount(()=>{window.removeEventListener('scroll',updateReading);window.removeEventListener('keydown',handleShortcut);if(searchBlurTimer)window.clearTimeout(searchBlurTimer);if(restoreTimer)window.clearTimeout(restoreTimer);if(prefetchTimer)window.clearTimeout(prefetchTimer);revealObserver?.disconnect()})
 </script>
 
 <template>
@@ -259,19 +259,16 @@ onBeforeUnmount(()=>{window.removeEventListener('scroll',updateReading);window.r
       <div v-if="articleLoading" class="article-loading" aria-live="polite"><i/><i/><i/><i/><span>正在加载文章正文…</span></div>
       <div v-else-if="articleError" class="article-error"><b>文章加载失败</b><span>{{articleError}}</span><button @click="router.go(0)">重新加载</button></div>
       <template v-else>
-        <section class="answer-card"><small>一句话回答</small><p>{{article.description}}</p></section>
-        <section class="learning-map"><div><small>统一学习模板</small><b>按八个步骤吃透这篇文章</b></div><button v-for="step in learningMap" :key="step.label" :class="{available:step.id}" :title="step.sourceTitle||'本文正文已覆盖此项'" @click="step.id&&scrollToSection(step.id)"><span>{{step.label}}</span><i>{{step.id?'↘':'·'}}</i></button></section>
         <div class="article-body" v-html="html"/>
-        <section class="quick-summary"><small>总结速记</small><h2>{{article.title}}</h2><p>{{article.description}}</p><ul v-if="quickPoints.length"><li v-for="point in quickPoints" :key="point">{{point}}</li></ul></section>
         <section v-if="related.length" class="related"><div class="section-kicker">继续学习</div><h2>同专题推荐</h2><div class="related-grid"><button v-for="card in related" :key="card.item.slug" @click="go(articlePath(card.item))" @mouseenter="prefetchArticle(card.item)"><small>{{card.label}} · {{card.item.minutes}} 分钟</small><b>{{card.item.title}}</b><span>{{card.item.description}}</span><i>开始阅读 →</i></button></div></section>
         <nav class="article-nav"><button v-if="previous" @click="go(articlePath(previous))" @mouseenter="prefetchArticle(previous)"><small>上一篇</small><b>← {{previous.title}}</b></button><span/><button v-if="next" class="next" @click="go(articlePath(next))" @mouseenter="prefetchArticle(next)"><small>下一篇</small><b>{{next.title}} →</b></button></nav>
       </template>
     </main>
 
-    <aside class="outline"><strong>本页大纲</strong><a v-for="item in outline" :key="item.id" :href="`#${item.id}`" :class="{active:activeHeading===item.id}" @click.prevent="scrollToSection(item.id)">{{item.title}}</a></aside>
+    <aside class="outline"><strong>文章要点</strong><a v-for="item in outline" :key="item.id" :href="`#${item.id}`" :class="{active:activeHeading===item.id}" @click.prevent="scrollToSection(item.id)">{{item.title}}</a></aside>
   </div>
 
-  <button class="mobile-outline-trigger" @click="outlineOpen=true">§ 本页目录</button>
-  <section class="mobile-outline-sheet" :class="{open:outlineOpen}"><header><div><small>{{article.category}}</small><b>本页目录</b></div><button aria-label="关闭本页目录" @click="outlineOpen=false">×</button></header><div><a v-for="item in outline" :key="item.id" :class="{active:activeHeading===item.id}" @click="scrollToSection(item.id)">{{item.title}}</a></div></section>
+  <button class="mobile-outline-trigger" @click="outlineOpen=true">§ 文章要点</button>
+  <section class="mobile-outline-sheet" :class="{open:outlineOpen}"><header><div><small>{{article.category}}</small><b>文章要点</b></div><button aria-label="关闭文章要点" @click="outlineOpen=false">×</button></header><div><a v-for="item in outline" :key="item.id" :class="{active:activeHeading===item.id}" @click="scrollToSection(item.id)">{{item.title}}</a></div></section>
   <button class="back-top" :class="{visible:showBackTop}" :style="{'--progress':`${readingProgress*3.6}deg`}" :aria-label="`阅读进度 ${readingProgress}%，回到顶部`" @click="backToTop"><span>↑</span><small>{{readingProgress}}%</small></button>
 </template>

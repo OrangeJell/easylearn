@@ -1,0 +1,40 @@
+<h2>先说结论</h2>
+<p>普通互斥同步优先使用 <code>synchronized</code>，语法简单且能自动释放锁。需要可中断获取、超时尝试、公平锁或多个条件队列时，使用 <code>ReentrantLock</code>。</p>
+<pre><code class="language-java">lock.lock();
+try {
+    updateState();
+} finally {
+    lock.unlock();
+}
+</code></pre>
+<p>显式锁必须在 <code>finally</code> 中释放，否则异常会造成永久占锁。</p>
+<h2>synchronized 锁住了什么</h2>
+<ul>
+<li>实例同步方法锁当前对象。</li>
+<li>静态同步方法锁对应的 <code>Class</code> 对象。</li>
+<li>同步代码块锁括号中指定的对象。</li>
+</ul>
+<p>进入同步块不仅提供互斥，还建立 happens-before 关系：一次解锁先行发生于后续对同一监视器的加锁，因此锁内写入对后续持锁线程可见。</p>
+<h2>可重入与公平性</h2>
+<p>可重入表示线程持有锁时，可以再次获得同一把锁，内部会维护持有次数。<code>synchronized</code> 和 <code>ReentrantLock</code> 都可重入。</p>
+<p>公平锁倾向于让等待时间最长的线程先获得锁，可以减少饥饿，但会降低吞吐量。非公平锁允许刚到达的线程竞争，减少线程切换，通常性能更高。公平也不等于绝对调度顺序。</p>
+<h2>AQS 的核心模型</h2>
+<p><code>AbstractQueuedSynchronizer</code> 使用一个 <code>state</code> 状态值和一个等待队列构建同步器。线程先通过 CAS 尝试修改状态；失败后包装为节点进入队列，并在合适时机被前驱节点唤醒。</p>
+<p>独占模式同一时刻只允许一个线程成功，共享模式允许多个线程通过。<code>ReentrantLock</code>、<code>Semaphore</code>、<code>CountDownLatch</code> 等都基于 AQS，但对 <code>state</code> 的解释不同。</p>
+<h2>Condition 条件队列</h2>
+<p><code>Condition</code> 类似 <code>wait/notify</code>，但一把锁可以创建多个条件队列，让等待原因更加明确。</p>
+<pre><code class="language-java">while (queue.isEmpty()) {
+    notEmpty.await();
+}
+var value = queue.remove();
+notFull.signal();
+</code></pre>
+<p>条件判断必须使用 <code>while</code>，因为线程被唤醒后条件可能已被其他线程改变，也需要防御虚假唤醒。</p>
+<h2>常见并发问题</h2>
+<p>死锁通常满足互斥、占有且等待、不可剥夺和循环等待四个条件。工程上可以通过统一加锁顺序、缩小锁范围、使用 <code>tryLock</code> 超时和避免锁内慢 IO 降低风险。</p>
+<p>锁粒度过大会限制并发，过小会增加协调复杂度。优化前应通过线程 dump、指标和压测确认竞争热点，不要仅凭感觉拆锁。</p>
+<h2>常见问题</h2>
+<h3>追问：公平锁一定公平吗？</h3>
+<p>公平锁倾向按等待顺序获取，但线程调度仍受操作系统影响；它减少饥饿却增加切换，吞吐通常低于非公平锁。</p>
+<h3>追问：sleep 和 wait 有何区别？</h3>
+<p><code>sleep</code> 是 Thread 的时间等待且不释放已持有锁；<code>wait</code> 必须在监视器内调用，会释放该监视器并等待通知。</p>

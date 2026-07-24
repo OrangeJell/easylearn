@@ -1,0 +1,78 @@
+<h2>先说结论</h2>
+<blockquote>
+<p>Java 只有值传递。基本类型参数复制具体值；引用类型参数复制的是引用值，调用方和被调用方的两个引用副本可以指向同一对象，但方法内给参数重新赋值不会改变调用方变量。</p>
+</blockquote>
+<p>因此方法可以通过引用副本修改同一可变对象的字段，却不能用 <code>obj = new Object()</code> 替换调用方持有的引用。</p>
+<h2>示例分析</h2>
+<pre><code class="language-java">void change(User user) {
+    user.setName(&quot;new&quot;); // 调用方可观察到对象状态变化
+    user = new User();   // 只改变局部引用副本
+}
+</code></pre>
+<p>两个现象并不矛盾：变化的是共享对象状态，未变化的是调用方变量中保存的引用值。</p>
+<h2>四类情况放在一起看</h2>
+<table>
+<thead>
+<tr>
+<th>传入内容</th>
+<th>方法内操作</th>
+<th>调用方能否观察到</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>基本类型 <code>int</code></td>
+<td>给参数重新赋值</td>
+<td>不能</td>
+</tr>
+<tr>
+<td>对象引用</td>
+<td>修改同一可变对象字段</td>
+<td>能</td>
+</tr>
+<tr>
+<td>对象引用</td>
+<td>给参数指向新对象</td>
+<td>不能</td>
+</tr>
+<tr>
+<td>数组引用</td>
+<td>修改数组元素</td>
+<td>能</td>
+</tr>
+</tbody></table>
+<p>数组也是对象，所以数组参数复制的仍是引用值。集合、StringBuilder、自定义实体都遵循同一规则，不存在“集合特殊传引用”。</p>
+<h2>为什么 swap 交换不了引用</h2>
+<pre><code class="language-java">static void swap(User left, User right) {
+    User temp = left;
+    left = right;
+    right = temp;
+}
+
+User a = new User(&quot;A&quot;);
+User b = new User(&quot;B&quot;);
+swap(a, b);
+</code></pre>
+<p>进入方法后可以理解为创建了 <code>left = a 中的引用值</code>、<code>right = b 中的引用值</code> 两个局部副本。swap 只交换局部变量，调用结束后 a 和 b 完全没变。若真要交换，应该返回包含两个结果的对象，或让调用方显式重新赋值。</p>
+<h2>可变对象带来的副作用</h2>
+<pre><code class="language-java">void normalize(List&lt;String&gt; names) {
+    names.replaceAll(String::trim);
+    names.removeIf(String::isEmpty);
+}
+</code></pre>
+<p>这个方法会修改调用方共享的列表。语法没有问题，但 API 名称和契约必须明确；更安全的版本可以创建新列表并返回。尤其在缓存、并发和领域对象中，隐式修改会让状态来源难以追踪。</p>
+<p>不可变对象能降低这种心智负担。方法接收值对象，计算后返回新值，调用方不会担心传入参数被悄悄改变；代价是可能产生额外对象，需要按场景衡量。</p>
+<h2>与其他语言术语的区别</h2>
+<p>引用传递意味着函数参数是调用方变量本身的别名，被调用方能让调用方变量指向另一个对象。Java 没有这种普通参数机制。C++ 的引用参数、某些语言的 <code>ref/out</code> 更接近真正引用传递，不能把它们的术语直接套到 Java。</p>
+<h2>实际用时要注意什么</h2>
+<p>可变参数可能造成隐式副作用。公共 API 可以优先接收不可变值对象，或明确说明方法是否修改传入集合；需要返回新对象时直接以返回值表达。</p>
+<h2>容易踩坑的地方</h2>
+<p>“对象作为参数就是引用传递”不准确。真正的引用传递允许被调用方替换调用方变量所引用的对象，而 Java 做不到这一点。</p>
+<h2>常见问题</h2>
+<h3>追问：为什么 String 传入方法后看起来改不了？</h3>
+<p>仍然是引用值的复制，只是 String 不可变；拼接或重新赋值会产生并指向新对象，不会修改原对象和调用方引用。</p>
+<h3>追问：Integer 参数能在方法里自增并影响调用方吗？</h3>
+<p>不能。<code>value++</code> 会先拆箱计算，再装箱并让局部参数指向新 Integer；包装对象本身不可变，调用方变量没有被替换。</p>
+<h3>追问：AtomicInteger 为什么可以被方法修改？</h3>
+<p>方法拿到引用值的副本，但副本指向同一个可变 AtomicInteger，调用其更新方法改变共享对象状态。它仍然不是引用传递。</p>
+<h3>追问：如何让方法返回多个修改结果？</h3>
+<p>定义记录类或结果对象，例如 <code>record SwapResult(User left, User right)</code>，通过返回值显式传递。这比依赖可变数组作为“输出参数”更清晰。</p>

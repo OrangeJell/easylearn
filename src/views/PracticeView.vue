@@ -2,15 +2,15 @@
 import{onBeforeUnmount,onMounted,ref,watch}from'vue'
 import{useRoute,useRouter}from'vue-router'
 import QuestionNode from'../components/QuestionNode.vue'
-import{curatedQuestionById,mergePracticeIndex,type PracticeQuestion,type PracticeQuestionSummary}from'../data/practice'
+import type{PracticeQuestion,PracticeQuestionSummary}from'../data/practice'
 
 type PracticeIndexPayload={version:string;questions:PracticeQuestionSummary[]}
 
 const route=useRoute(),router=useRouter()
 const questions=ref<PracticeQuestionSummary[]>([]),questionBag=ref<string[]>([]),currentQuestion=ref<PracticeQuestion>()
-const switching=ref(false),loading=ref(true),loadError=ref('')
+const switching=ref(false),loading=ref(true),loadError=ref(''),practiceVersion=ref('')
 const questionCache=new Map<string,PracticeQuestion>()
-let animationTimer:number|undefined,detailRequest=0
+let animationTimer:number|undefined,prefetchTimer:number|undefined,detailRequest=0
 
 function shuffle(values:string[]){
   const output=[...values]
@@ -27,20 +27,26 @@ function takeNextSummary(){
   return questions.value.find(question=>question.id===id)
 }
 function summaryById(id:string){return questions.value.find(question=>question.id===id)}
+async function requestQuestion(id:string,version=''){
+  const suffix=version?`?v=${encodeURIComponent(version)}`:''
+  const response=await fetch(`/practice/questions/${encodeURIComponent(id)}.json${suffix}`)
+  if(!response.ok)throw new Error('题目加载失败')
+  return response.json() as Promise<PracticeQuestion>
+}
 async function fetchQuestion(summary:PracticeQuestionSummary){
-  const curated=curatedQuestionById(summary.id)
-  if(curated)return curated
   const cached=questionCache.get(summary.id)
   if(cached)return cached
-  const response=await fetch(`/practice/questions/${encodeURIComponent(summary.id)}.json`)
-  if(!response.ok)throw new Error('题目加载失败')
-  const question=await response.json() as PracticeQuestion
+  const question=await requestQuestion(summary.id,practiceVersion.value)
   questionCache.set(summary.id,question)
   return question
 }
 function prefetchNext(){
   const next=summaryById(questionBag.value[0]||'')
-  if(next&&!curatedQuestionById(next.id)&&!questionCache.has(next.id))void fetchQuestion(next).catch(()=>undefined)
+  if(!next||questionCache.has(next.id))return
+  const connection=(navigator as Navigator&{connection?:{saveData?:boolean;effectiveType?:string}}).connection
+  if(connection?.saveData||/2g/.test(connection?.effectiveType||''))return
+  if(prefetchTimer)window.clearTimeout(prefetchTimer)
+  prefetchTimer=window.setTimeout(()=>void fetchQuestion(next).catch(()=>undefined),700)
 }
 async function selectQuestion(summary:PracticeQuestionSummary,updateAddress=true){
   const request=++detailRequest
@@ -59,12 +65,15 @@ async function selectQuestion(summary:PracticeQuestionSummary,updateAddress=true
 async function loadQuestionBank(){
   loading.value=true;loadError.value=''
   try{
+    const routeId=String(route.params.questionId||'')
+    const directRequest=routeId?requestQuestion(routeId).catch(()=>undefined):Promise.resolve(undefined)
     const response=await fetch('/practice/index.json')
     if(!response.ok)throw new Error('题库加载失败')
     const payload=await response.json() as PracticeIndexPayload
-    questions.value=mergePracticeIndex(payload.questions)
+    practiceVersion.value=payload.version;questions.value=payload.questions
+    const directQuestion=await directRequest
+    if(directQuestion&&questions.value.some(question=>question.id===directQuestion.id))questionCache.set(directQuestion.id,directQuestion)
     refillBag()
-    const routeId=String(route.params.questionId||'')
     const target=summaryById(routeId)||takeNextSummary()
     if(!target)throw new Error('题库暂无可用题目')
     await selectQuestion(target,true)
@@ -87,7 +96,7 @@ watch(()=>String(route.params.questionId||''),id=>{
   if(target)void selectQuestion(target,false)
 })
 onMounted(()=>{document.title='高频面试题 | Java 知识库';void loadQuestionBank()})
-onBeforeUnmount(()=>{if(animationTimer)window.clearTimeout(animationTimer)})
+onBeforeUnmount(()=>{if(animationTimer)window.clearTimeout(animationTimer);if(prefetchTimer)window.clearTimeout(prefetchTimer)})
 </script>
 
 <template>

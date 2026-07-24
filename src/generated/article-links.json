@@ -1,0 +1,602 @@
+[
+  {
+    "categorySlug": "java-basic",
+    "slug": "string-immutable",
+    "title": "String 为什么被 final 修饰且不可变？",
+    "file": "java-basic/string-immutable"
+  },
+  {
+    "categorySlug": "java-basic",
+    "slug": "equals-hashcode",
+    "title": "==、equals 和 hashCode 的区别？",
+    "file": "java-basic/equals-hashcode"
+  },
+  {
+    "categorySlug": "java-basic",
+    "slug": "generics",
+    "title": "Java 泛型、类型擦除与通配符详解",
+    "file": "java-basic/generics"
+  },
+  {
+    "categorySlug": "java-basic",
+    "slug": "exception-handling",
+    "title": "Java 异常体系与最佳实践是什么？",
+    "file": "java-basic/exception-handling"
+  },
+  {
+    "categorySlug": "java-basic",
+    "slug": "reflection-annotations",
+    "title": "Java 反射和注解的原理与使用场景是什么？",
+    "file": "java-basic/reflection-annotations"
+  },
+  {
+    "categorySlug": "java-basic",
+    "slug": "serialization",
+    "title": "Java 序列化有哪些方式和风险？",
+    "file": "java-basic/serialization"
+  },
+  {
+    "categorySlug": "java-basic",
+    "slug": "interface-abstract-class",
+    "title": "接口和抽象类有什么区别？",
+    "file": "java-basic/interface-abstract-class"
+  },
+  {
+    "categorySlug": "java-basic",
+    "slug": "overload-override",
+    "title": "方法重载和重写有什么区别？",
+    "file": "java-basic/overload-override"
+  },
+  {
+    "categorySlug": "java-basic",
+    "slug": "pass-by-value",
+    "title": "Java 到底是值传递还是引用传递？",
+    "file": "java-basic/pass-by-value"
+  },
+  {
+    "categorySlug": "java-basic",
+    "slug": "autoboxing-integer-cache",
+    "title": "自动装箱、拆箱和 Integer 缓存有哪些坑？",
+    "file": "java-basic/autoboxing-integer-cache"
+  },
+  {
+    "categorySlug": "collections",
+    "slug": "hashmap",
+    "title": "HashMap 的底层原理是什么？",
+    "file": "collections/hashmap"
+  },
+  {
+    "categorySlug": "collections",
+    "slug": "arraylist-linkedlist",
+    "title": "ArrayList 与 LinkedList 应该怎么选？",
+    "file": "collections/arraylist-linkedlist"
+  },
+  {
+    "categorySlug": "collections",
+    "slug": "concurrenthashmap",
+    "title": "ConcurrentHashMap 如何保证线程安全？",
+    "file": "collections/concurrenthashmap"
+  },
+  {
+    "categorySlug": "collections",
+    "slug": "set-comparison",
+    "title": "HashSet、LinkedHashSet 和 TreeSet 有什么区别？",
+    "file": "collections/set-comparison"
+  },
+  {
+    "categorySlug": "collections",
+    "slug": "fail-fast-iterator",
+    "title": "fail-fast 和 fail-safe 迭代器有什么区别？",
+    "file": "collections/fail-fast-iterator"
+  },
+  {
+    "categorySlug": "collections",
+    "slug": "copy-on-write-arraylist",
+    "title": "CopyOnWriteArrayList 适合什么场景？",
+    "file": "collections/copy-on-write-arraylist"
+  },
+  {
+    "categorySlug": "collections",
+    "slug": "queue-deque-priorityqueue",
+    "title": "Queue、Deque 和 PriorityQueue 应该怎么用？",
+    "file": "collections/queue-deque-priorityqueue"
+  },
+  {
+    "categorySlug": "collections",
+    "slug": "concurrent-collections",
+    "title": "同步集合和并发集合有什么区别？",
+    "file": "collections/concurrent-collections"
+  },
+  {
+    "categorySlug": "collections",
+    "slug": "comparable-comparator",
+    "title": "Comparable 和 Comparator 有什么区别？",
+    "file": "collections/comparable-comparator"
+  },
+  {
+    "categorySlug": "collections",
+    "slug": "immutable-collections",
+    "title": "不可变集合和只读集合有什么区别？",
+    "file": "collections/immutable-collections"
+  },
+  {
+    "categorySlug": "concurrency",
+    "slug": "thread-pool",
+    "title": "Java 线程池有几种创建方式？",
+    "file": "concurrency/thread-pool"
+  },
+  {
+    "categorySlug": "concurrency",
+    "slug": "volatile-happens-before",
+    "title": "volatile 如何保证可见性和有序性？",
+    "file": "concurrency/volatile-happens-before"
+  },
+  {
+    "categorySlug": "concurrency",
+    "slug": "locks-aqs",
+    "title": "synchronized、ReentrantLock 与 AQS 原理",
+    "file": "concurrency/locks-aqs"
+  },
+  {
+    "categorySlug": "concurrency",
+    "slug": "thread-lifecycle-communication",
+    "title": "Java 线程有哪些状态？线程间如何通信？",
+    "file": "concurrency/thread-lifecycle-communication"
+  },
+  {
+    "categorySlug": "concurrency",
+    "slug": "cas-aba",
+    "title": "CAS 的原理是什么？如何解决 ABA 问题？",
+    "file": "concurrency/cas-aba"
+  },
+  {
+    "categorySlug": "concurrency",
+    "slug": "threadlocal",
+    "title": "ThreadLocal 的原理和内存泄漏问题是什么？",
+    "file": "concurrency/threadlocal"
+  },
+  {
+    "categorySlug": "concurrency",
+    "slug": "completable-future",
+    "title": "CompletableFuture 如何实现异步任务编排？",
+    "file": "concurrency/completable-future"
+  },
+  {
+    "categorySlug": "concurrency",
+    "slug": "deadlock",
+    "title": "如何定位和避免 Java 死锁？",
+    "file": "concurrency/deadlock"
+  },
+  {
+    "categorySlug": "concurrency",
+    "slug": "java-memory-model",
+    "title": "Java 内存模型和 happens-before 规则是什么？",
+    "file": "concurrency/java-memory-model"
+  },
+  {
+    "categorySlug": "concurrency",
+    "slug": "virtual-threads",
+    "title": "Java 虚拟线程适合解决什么问题？",
+    "file": "concurrency/virtual-threads"
+  },
+  {
+    "categorySlug": "jvm",
+    "slug": "runtime-data-area",
+    "title": "JVM 运行时数据区有哪些？",
+    "file": "jvm/runtime-data-area"
+  },
+  {
+    "categorySlug": "jvm",
+    "slug": "gc-guide",
+    "title": "JVM 垃圾回收算法与收集器选择",
+    "file": "jvm/gc-guide"
+  },
+  {
+    "categorySlug": "jvm",
+    "slug": "production-oom-troubleshooting",
+    "title": "线上遇到 OOM 怎么排查和处理？",
+    "file": "jvm/production-oom-troubleshooting"
+  },
+  {
+    "categorySlug": "jvm",
+    "slug": "production-memory-sizing",
+    "title": "线上 JVM 内存怎么配置？为什么这样配置？",
+    "file": "jvm/production-memory-sizing"
+  },
+  {
+    "categorySlug": "jvm",
+    "slug": "class-loading",
+    "title": "JVM 类加载过程是什么？",
+    "file": "jvm/class-loading"
+  },
+  {
+    "categorySlug": "jvm",
+    "slug": "classloader-delegation",
+    "title": "双亲委派模型是什么？为什么要打破它？",
+    "file": "jvm/classloader-delegation"
+  },
+  {
+    "categorySlug": "jvm",
+    "slug": "object-allocation",
+    "title": "Java 对象是如何创建和分配内存的？",
+    "file": "jvm/object-allocation"
+  },
+  {
+    "categorySlug": "jvm",
+    "slug": "gc-tuning",
+    "title": "JVM GC 调优应该从哪里开始？",
+    "file": "jvm/gc-tuning"
+  },
+  {
+    "categorySlug": "jvm",
+    "slug": "stack-metaspace-errors",
+    "title": "StackOverflowError 和 Metaspace OOM 如何排查？",
+    "file": "jvm/stack-metaspace-errors"
+  },
+  {
+    "categorySlug": "jvm",
+    "slug": "jit-compiler",
+    "title": "JIT 编译器如何优化 Java 代码？",
+    "file": "jvm/jit-compiler"
+  },
+  {
+    "categorySlug": "mysql",
+    "slug": "btree-index",
+    "title": "MySQL 为什么使用 B+Tree 索引？",
+    "file": "mysql/btree-index"
+  },
+  {
+    "categorySlug": "mysql",
+    "slug": "transactions-mvcc",
+    "title": "MySQL 事务隔离级别与 MVCC 原理",
+    "file": "mysql/transactions-mvcc"
+  },
+  {
+    "categorySlug": "mysql",
+    "slug": "sql-execution-explain",
+    "title": "MySQL 一条 SQL 如何执行？EXPLAIN 怎么分析？",
+    "file": "mysql/sql-execution-explain"
+  },
+  {
+    "categorySlug": "mysql",
+    "slug": "locks-deadlock",
+    "title": "MySQL 锁机制、死锁与线上排查详解",
+    "file": "mysql/locks-deadlock"
+  },
+  {
+    "categorySlug": "mysql",
+    "slug": "redo-undo-binlog",
+    "title": "Redo Log、Undo Log 与 Binlog 有什么区别？",
+    "file": "mysql/redo-undo-binlog"
+  },
+  {
+    "categorySlug": "mysql",
+    "slug": "replication-high-availability",
+    "title": "MySQL 主从复制、延迟与高可用设计",
+    "file": "mysql/replication-high-availability"
+  },
+  {
+    "categorySlug": "mysql",
+    "slug": "slow-sql-troubleshooting",
+    "title": "线上遇到慢 SQL 应该怎么处理？",
+    "file": "mysql/slow-sql-troubleshooting"
+  },
+  {
+    "categorySlug": "mysql",
+    "slug": "table-design-guide",
+    "title": "MySQL 数据库表应该怎么设计？",
+    "file": "mysql/table-design-guide"
+  },
+  {
+    "categorySlug": "mysql",
+    "slug": "deep-pagination",
+    "title": "MySQL 深分页为什么慢？如何优化？",
+    "file": "mysql/deep-pagination"
+  },
+  {
+    "categorySlug": "mysql",
+    "slug": "sharding",
+    "title": "MySQL 什么时候需要分库分表？怎么设计？",
+    "file": "mysql/sharding"
+  },
+  {
+    "categorySlug": "redis",
+    "slug": "data-structures-use-cases",
+    "title": "Redis 有哪些数据结构？分别适合什么场景？",
+    "file": "redis/data-structures-use-cases"
+  },
+  {
+    "categorySlug": "redis",
+    "slug": "persistence-high-availability",
+    "title": "Redis 持久化和高可用是怎么实现的？",
+    "file": "redis/persistence-high-availability"
+  },
+  {
+    "categorySlug": "redis",
+    "slug": "distributed-lock",
+    "title": "Redis 分布式锁应该怎么正确实现？",
+    "file": "redis/distributed-lock"
+  },
+  {
+    "categorySlug": "redis",
+    "slug": "cache-problems",
+    "title": "Redis 缓存穿透、击穿和雪崩怎么解决？",
+    "file": "redis/cache-problems"
+  },
+  {
+    "categorySlug": "redis",
+    "slug": "expiration-eviction",
+    "title": "Redis 过期删除和内存淘汰策略是什么？",
+    "file": "redis/expiration-eviction"
+  },
+  {
+    "categorySlug": "redis",
+    "slug": "cache-consistency",
+    "title": "Redis 缓存与数据库一致性怎么保证？",
+    "file": "redis/cache-consistency"
+  },
+  {
+    "categorySlug": "redis",
+    "slug": "hot-key-big-key",
+    "title": "Redis 热 Key 和大 Key 如何发现与治理？",
+    "file": "redis/hot-key-big-key"
+  },
+  {
+    "categorySlug": "redis",
+    "slug": "cluster-sharding",
+    "title": "Redis Cluster 的分片和故障转移原理是什么？",
+    "file": "redis/cluster-sharding"
+  },
+  {
+    "categorySlug": "redis",
+    "slug": "why-fast",
+    "title": "Redis 为什么快？单线程模型如何理解？",
+    "file": "redis/why-fast"
+  },
+  {
+    "categorySlug": "redis",
+    "slug": "transactions-lua-pipeline",
+    "title": "Redis 事务、Lua 和 Pipeline 有什么区别？",
+    "file": "redis/transactions-lua-pipeline"
+  },
+  {
+    "categorySlug": "clickhouse",
+    "slug": "mergetree",
+    "title": "ClickHouse MergeTree 引擎原理是什么？",
+    "file": "clickhouse/mergetree"
+  },
+  {
+    "categorySlug": "clickhouse",
+    "slug": "query-optimization",
+    "title": "ClickHouse 查询优化实战指南",
+    "file": "clickhouse/query-optimization"
+  },
+  {
+    "categorySlug": "clickhouse",
+    "slug": "advantages-limitations",
+    "title": "ClickHouse 有哪些优势和不足？",
+    "file": "clickhouse/advantages-limitations"
+  },
+  {
+    "categorySlug": "clickhouse",
+    "slug": "production-optimization",
+    "title": "ClickHouse 在项目中做过哪些优化？",
+    "file": "clickhouse/production-optimization"
+  },
+  {
+    "categorySlug": "clickhouse",
+    "slug": "concurrency-limitations",
+    "title": "ClickHouse 为什么对高并发支持不足？",
+    "file": "clickhouse/concurrency-limitations"
+  },
+  {
+    "categorySlug": "clickhouse",
+    "slug": "replacing-mergetree",
+    "title": "ReplacingMergeTree 如何实现去重？",
+    "file": "clickhouse/replacing-mergetree"
+  },
+  {
+    "categorySlug": "clickhouse",
+    "slug": "partition-order-primary-key",
+    "title": "ClickHouse 分区键、排序键和主键有什么区别？",
+    "file": "clickhouse/partition-order-primary-key"
+  },
+  {
+    "categorySlug": "clickhouse",
+    "slug": "data-skipping-index",
+    "title": "ClickHouse 跳数索引有什么作用？",
+    "file": "clickhouse/data-skipping-index"
+  },
+  {
+    "categorySlug": "clickhouse",
+    "slug": "distributed-table",
+    "title": "ClickHouse Distributed 表如何分片和查询？",
+    "file": "clickhouse/distributed-table"
+  },
+  {
+    "categorySlug": "clickhouse",
+    "slug": "write-optimization",
+    "title": "ClickHouse 写入为什么要批量？如何优化？",
+    "file": "clickhouse/write-optimization"
+  },
+  {
+    "categorySlug": "kafka",
+    "slug": "consumer-group",
+    "title": "Kafka 消费者组与分区如何协作？",
+    "file": "kafka/consumer-group"
+  },
+  {
+    "categorySlug": "kafka",
+    "slug": "reliability",
+    "title": "Kafka 如何实现端到端可靠投递？",
+    "file": "kafka/reliability"
+  },
+  {
+    "categorySlug": "kafka",
+    "slug": "message-loss-prevention",
+    "title": "Kafka 怎么保证消息不丢失？",
+    "file": "kafka/message-loss-prevention"
+  },
+  {
+    "categorySlug": "kafka",
+    "slug": "duplicate-consumption-idempotency",
+    "title": "Kafka 怎么保证不重复消费？",
+    "file": "kafka/duplicate-consumption-idempotency"
+  },
+  {
+    "categorySlug": "kafka",
+    "slug": "message-backlog-troubleshooting",
+    "title": "Kafka 消息堆积时应该怎么处理？",
+    "file": "kafka/message-backlog-troubleshooting"
+  },
+  {
+    "categorySlug": "kafka",
+    "slug": "isr-leader-election",
+    "title": "Kafka ISR 和 Leader 选举机制是什么？",
+    "file": "kafka/isr-leader-election"
+  },
+  {
+    "categorySlug": "kafka",
+    "slug": "message-ordering",
+    "title": "Kafka 如何保证消息顺序？",
+    "file": "kafka/message-ordering"
+  },
+  {
+    "categorySlug": "kafka",
+    "slug": "transactions-exactly-once",
+    "title": "Kafka 事务和 Exactly-Once 语义如何实现？",
+    "file": "kafka/transactions-exactly-once"
+  },
+  {
+    "categorySlug": "kafka",
+    "slug": "zero-copy",
+    "title": "Kafka 的零拷贝和顺序写为什么快？",
+    "file": "kafka/zero-copy"
+  },
+  {
+    "categorySlug": "kafka",
+    "slug": "partition-planning",
+    "title": "Kafka 分区数应该如何规划和扩容？",
+    "file": "kafka/partition-planning"
+  },
+  {
+    "categorySlug": "elasticsearch",
+    "slug": "inverted-index",
+    "title": "Elasticsearch 倒排索引原理是什么？",
+    "file": "elasticsearch/inverted-index"
+  },
+  {
+    "categorySlug": "elasticsearch",
+    "slug": "mapping-query",
+    "title": "Elasticsearch Mapping、分词与查询选择",
+    "file": "elasticsearch/mapping-query"
+  },
+  {
+    "categorySlug": "elasticsearch",
+    "slug": "performance-troubleshooting",
+    "title": "Elasticsearch 会遇到哪些性能问题？如何优化？",
+    "file": "elasticsearch/performance-troubleshooting"
+  },
+  {
+    "categorySlug": "elasticsearch",
+    "slug": "shard-replica",
+    "title": "Elasticsearch 分片和副本应该如何设计？",
+    "file": "elasticsearch/shard-replica"
+  },
+  {
+    "categorySlug": "elasticsearch",
+    "slug": "cluster-election",
+    "title": "Elasticsearch 集群选主和脑裂如何处理？",
+    "file": "elasticsearch/cluster-election"
+  },
+  {
+    "categorySlug": "elasticsearch",
+    "slug": "write-search-process",
+    "title": "Elasticsearch 写入和搜索流程是什么？",
+    "file": "elasticsearch/write-search-process"
+  },
+  {
+    "categorySlug": "elasticsearch",
+    "slug": "deep-pagination",
+    "title": "Elasticsearch 深分页有哪些解决方案？",
+    "file": "elasticsearch/deep-pagination"
+  },
+  {
+    "categorySlug": "elasticsearch",
+    "slug": "near-real-time",
+    "title": "Elasticsearch 为什么是近实时搜索？",
+    "file": "elasticsearch/near-real-time"
+  },
+  {
+    "categorySlug": "elasticsearch",
+    "slug": "data-consistency",
+    "title": "Elasticsearch 如何处理并发更新和数据一致性？",
+    "file": "elasticsearch/data-consistency"
+  },
+  {
+    "categorySlug": "elasticsearch",
+    "slug": "index-lifecycle",
+    "title": "Elasticsearch 索引生命周期和冷热分层怎么设计？",
+    "file": "elasticsearch/index-lifecycle"
+  },
+  {
+    "categorySlug": "architecture",
+    "slug": "cache-consistency",
+    "title": "缓存与数据库一致性如何保证？",
+    "file": "architecture/cache-consistency"
+  },
+  {
+    "categorySlug": "architecture",
+    "slug": "idempotency",
+    "title": "分布式系统如何设计幂等接口？",
+    "file": "architecture/idempotency"
+  },
+  {
+    "categorySlug": "architecture",
+    "slug": "flash-sale-system-design",
+    "title": "如何设计一个高并发秒杀系统？",
+    "file": "architecture/flash-sale-system-design"
+  },
+  {
+    "categorySlug": "architecture",
+    "slug": "config-distribution-gray-release",
+    "title": "如何设计支持灰度的线上配置分发系统？",
+    "file": "architecture/config-distribution-gray-release"
+  },
+  {
+    "categorySlug": "architecture",
+    "slug": "distributed-transaction",
+    "title": "分布式事务有哪些解决方案？",
+    "file": "architecture/distributed-transaction"
+  },
+  {
+    "categorySlug": "architecture",
+    "slug": "rate-limiting",
+    "title": "高并发系统如何设计限流？",
+    "file": "architecture/rate-limiting"
+  },
+  {
+    "categorySlug": "architecture",
+    "slug": "resilience",
+    "title": "熔断、降级、超时和重试应该如何配合？",
+    "file": "architecture/resilience"
+  },
+  {
+    "categorySlug": "architecture",
+    "slug": "distributed-id",
+    "title": "分布式唯一 ID 有哪些生成方案？",
+    "file": "architecture/distributed-id"
+  },
+  {
+    "categorySlug": "architecture",
+    "slug": "delayed-task",
+    "title": "延时任务系统应该如何设计？",
+    "file": "architecture/delayed-task"
+  },
+  {
+    "categorySlug": "architecture",
+    "slug": "observability",
+    "title": "分布式系统的可观测性应该如何设计？",
+    "file": "architecture/observability"
+  }
+]

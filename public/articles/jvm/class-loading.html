@@ -1,0 +1,81 @@
+<h2>先说结论</h2>
+<blockquote>
+<p>类生命周期主要包括加载、链接、初始化、使用和卸载，链接又包含验证、准备和解析。加载创建 Class 对象；准备为静态字段分配内存并设默认值；初始化执行类构造器 <code>&lt;clinit&gt;</code>，按源码顺序处理静态赋值和静态代码块。</p>
+</blockquote>
+<p>JVM 保证同一个类的初始化过程加锁且只执行一次。初始化子类前会先初始化尚未初始化的父类，但使用某个类的编译期常量不一定触发初始化。</p>
+<h2>关键阶段</h2>
+<p>验证检查字节码结构和类型安全；解析把常量池符号引用转换为直接引用，具体时机可以延后。加载与链接允许交叉进行，因此不应把流程理解成所有类都严格串行一次完成。</p>
+<h2>生命周期逐阶段理解</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>JVM 的主要工作</th>
+<th>容易混淆的地方</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>加载</td>
+<td>找到 class 字节、创建 Class 对象</td>
+<td>不等于执行静态代码</td>
+</tr>
+<tr>
+<td>验证</td>
+<td>校验格式、语义、字节码安全</td>
+<td>保障类型与指令合法性</td>
+</tr>
+<tr>
+<td>准备</td>
+<td>为静态字段分配内存、设默认值</td>
+<td>普通静态赋值尚未执行</td>
+</tr>
+<tr>
+<td>解析</td>
+<td>符号引用转直接引用</td>
+<td>可按需延迟进行</td>
+</tr>
+<tr>
+<td>初始化</td>
+<td>执行 <code>&lt;clinit&gt;</code></td>
+<td>执行静态字段赋值和 static 块</td>
+</tr>
+<tr>
+<td>卸载</td>
+<td>回收类元数据</td>
+<td>依赖类加载器可回收</td>
+</tr>
+</tbody></table>
+<p><code>&lt;clinit&gt;</code> 由编译器收集静态变量赋值和静态代码块按源码顺序生成。它不是 Java 源码中可直接调用的方法；若父类尚未初始化，子类初始化前会先初始化父类。</p>
+<h2>准备与初始化示例</h2>
+<pre><code class="language-java">class Config {
+    static int port = loadPort();
+    static final int MAX_RETRY = 3;
+    static { audit(&quot;config initialized&quot;); }
+}
+</code></pre>
+<p>准备阶段中 <code>port</code> 通常先是 0，<code>MAX_RETRY</code> 这类编译期常量可能直接获得 3。初始化阶段才会执行 <code>loadPort()</code> 和 static 块。若 <code>loadPort</code> 抛异常，类会初始化失败，后续主动使用通常得到 <code>NoClassDefFoundError</code> 等错误链。</p>
+<h2>哪些操作会触发初始化</h2>
+<pre><code class="language-java">new Config();               // 会
+Config.staticMethod();      // 会
+int p = Config.port;        // 读取非编译期常量，会
+int n = Config.MAX_RETRY;   // 编译期常量通常不会
+Config[] array = new Config[10]; // 创建数组类型通常不会
+</code></pre>
+<p>反射、MethodHandle 等路径的具体触发条件要看调用方式。不要把“引用到类名”一概说成初始化，重点是有没有发生规范定义的主动使用。</p>
+<h2>初始化死锁与副作用</h2>
+<p>JVM 会保证 <code>&lt;clinit&gt;</code> 在同一类加载器下只由一个线程执行，其他线程等待它完成。静态初始化中做网络请求、获取外部锁、启动回调或相互访问两个类的初始化逻辑，容易造成启动长时间卡住甚至死锁。静态块应只做确定、快速、可恢复的初始化；外部资源放到应用生命周期管理中。</p>
+<h2>排查类初始化问题</h2>
+<p>启动失败时先找到最初的 <code>ExceptionInInitializerError</code> cause，而不是只看后续 NoClassDefFoundError。类加载日志、JFR、<code>jcmd VM.classloaders</code>、线程转储可帮助定位是字节缺失、模块访问、加载器隔离还是静态代码阻塞。</p>
+<h2>初始化时机</h2>
+<p>常见主动使用包括创建实例、读写非编译期常量的静态字段、调用静态方法、反射调用以及初始化某个主类。数组类型由 JVM 直接创建，不等于初始化其元素类型。</p>
+<h2>容易踩坑的地方</h2>
+<p>准备阶段通常只写零值，不执行 <code>static int x = compute()</code>；但带 ConstantValue 的编译期常量可能在准备阶段直接赋常量值。类加载完成也不等于已经初始化。</p>
+<h2>常见问题</h2>
+<h3>追问：类初始化失败后还能再次使用吗？</h3>
+<p>同一类加载器下初始化失败通常会被标记为错误，后续主动使用会抛出相关错误，不能简单依赖再次执行静态代码恢复。</p>
+<h3>追问：接口也会初始化吗？</h3>
+<p>会，但初始化规则与类略有不同。初始化一个类不一定初始化其所有接口，只有使用到接口中需要初始化的成员时才触发相应规则。</p>
+<h3>追问：为什么 static final String 有时会触发初始化？</h3>
+<p>字面量拼接等编译期常量会被内联，通常不触发；通过方法计算、new String 或运行时读取配置得到的 final 值不是编译期常量，访问时会触发类初始化。</p>
+<h3>追问：类卸载的前提是什么？</h3>
+<p>通常要求该类的定义加载器、该加载器加载的类实例和 Class 对象都不再被强引用，并发生合适 GC。应用类加载器长期存活时，普通业务类一般不会单独卸载。</p>

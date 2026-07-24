@@ -1,0 +1,85 @@
+<h2>先说结论</h2>
+<blockquote>
+<p>Java 可以通过 Executors 工厂方法、ThreadPoolExecutor、ScheduledThreadPoolExecutor 和 ForkJoinPool 创建不同类型的执行器；生产环境通常推荐手动构造 ThreadPoolExecutor，明确资源边界。</p>
+</blockquote>
+<h2>execute 的执行流程</h2>
+<p>提交任务后，ThreadPoolExecutor 会按顺序判断：</p>
+<ol>
+<li>当前线程数小于 <code>corePoolSize</code>：创建核心线程执行任务，即使已有核心线程空闲。</li>
+<li>核心线程已达到上限：尝试将任务放入 <code>workQueue</code>。</li>
+<li>队列放不下且线程数小于 <code>maximumPoolSize</code>：创建非核心线程。</li>
+<li>队列已满且线程数达到最大值：调用拒绝策略。</li>
+</ol>
+<p>这意味着线程池不会一开始就把线程创建到最大值，队列容量会影响何时开始扩容。</p>
+<h2>七个核心参数</h2>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+<th>配置关注点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>corePoolSize</code></td>
+<td>常驻核心线程数</td>
+<td>任务的稳定处理能力</td>
+</tr>
+<tr>
+<td><code>maximumPoolSize</code></td>
+<td>最大线程数</td>
+<td>峰值并发和下游承载</td>
+</tr>
+<tr>
+<td><code>keepAliveTime</code></td>
+<td>非核心线程空闲存活时间</td>
+<td>峰值后的资源回收</td>
+</tr>
+<tr>
+<td><code>workQueue</code></td>
+<td>保存等待任务</td>
+<td>有界、容量、顺序</td>
+</tr>
+<tr>
+<td><code>threadFactory</code></td>
+<td>创建和命名线程</td>
+<td>线程名、优先级、异常处理</td>
+</tr>
+<tr>
+<td><code>handler</code></td>
+<td>任务无法接收时的处理器</td>
+<td>失败、降级或反压策略</td>
+</tr>
+</tbody></table>
+<pre><code class="language-java">ThreadPoolExecutor executor = new ThreadPoolExecutor(
+    8, 16, 60, TimeUnit.SECONDS,
+    new ArrayBlockingQueue&lt;&gt;(1000),
+    new NamedThreadFactory(&quot;order-worker&quot;),
+    new ThreadPoolExecutor.CallerRunsPolicy()
+);
+</code></pre>
+<h2>队列策略如何影响线程池？</h2>
+<p><code>SynchronousQueue</code> 不保存任务，适合直接移交，但可能造成线程快速增长；无界 <code>LinkedBlockingQueue</code> 会让任务持续排队，通常使最大线程数几乎不起作用；有界队列能给系统建立明确的内存和延迟上限，更适合核心业务。</p>
+<p>队列不是越大越好。队列过大可能掩盖消费速度不足，最终带来更长延迟；队列过小又可能频繁触发拒绝。应该结合任务耗时、请求峰值和下游容量压测。</p>
+<h2>拒绝策略</h2>
+<ul>
+<li><code>AbortPolicy</code>：抛出异常，适合必须让调用方感知失败的任务。</li>
+<li><code>CallerRunsPolicy</code>：由提交任务的线程执行，形成自然反压。</li>
+<li><code>DiscardPolicy</code>：静默丢弃，只适用于明确允许丢失的任务。</li>
+<li><code>DiscardOldestPolicy</code>：丢弃队头任务后重试，适合旧任务价值较低的场景。</li>
+</ul>
+<h2>线程数怎么设置？</h2>
+<p>CPU 密集型任务通常从接近 CPU 核数开始；IO 密集型任务可以更高，但不能只套公式。应观察 CPU 使用率、上下文切换、队列长度、任务等待时间、拒绝次数和下游 RT。</p>
+<p>线程池还应配置有意义的线程名、统一异常处理和关闭流程。应用停止时调用 <code>shutdown()</code>，必要时在超时后调用 <code>shutdownNow()</code>，不要让工作线程无限期存活。</p>
+<h2>Executors 为什么要谨慎？</h2>
+<p>工厂方法适合快速原型，但固定线程池和单线程池默认使用近似无界队列，缓存线程池的最大线程数也非常大。生产环境如果不明确边界，任务堆积或突发流量可能耗尽内存或线程资源。</p>
+<h2>参考资料</h2>
+<ul>
+<li><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ThreadPoolExecutor.html">Oracle Java SE 21 ThreadPoolExecutor API</a></li>
+<li><a href="https://docs.oracle.com/en/java/javase/21/core/java-concurrency.html">Oracle Java Concurrency Utilities</a></li>
+</ul>
+<h2>常见问题</h2>
+<h3>追问：CPU 密集与 IO 密集线程数如何设置？</h3>
+<p>CPU 密集通常接近核数，IO 密集可根据等待时间比例适当增加。公式只是起点，最终要用生产任务模型压测，并观察 CPU、队列和下游容量。</p>
+<h3>追问：execute 和 submit 有什么区别？</h3>
+<p><code>execute</code> 接收 Runnable，异常通常交给线程的未捕获异常处理器；<code>submit</code> 返回 Future，任务异常会封装在 Future 中，若从不 <code>get</code> 容易被忽略。</p>

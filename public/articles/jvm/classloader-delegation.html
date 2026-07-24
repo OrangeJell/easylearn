@@ -1,0 +1,42 @@
+<h2>先说结论</h2>
+<blockquote>
+<p>典型双亲委派中，类加载请求先交给父加载器，父加载器无法完成时子加载器才尝试。它避免核心类被应用重复定义，并让不同模块共享基础类型。这里的“父”是委派关系，不一定是 Java 对象继承关系。</p>
+</blockquote>
+<p>同名类由不同类加载器加载后属于不同类型，强转可能出现看似奇怪的 <code>ClassCastException</code>。</p>
+<h2>核心价值</h2>
+<p>委派使 <code>java.lang.String</code> 等核心类型由受信任加载器统一定义，保证类型唯一性和安全边界，也减少重复加载基础依赖。</p>
+<h2>常见加载器层次</h2>
+<p>现代 JDK 的具体实现随版本变化，但概念上可区分：Bootstrap 加载 Java 核心模块，Platform 加载平台模块，Application 加载应用 classpath/module-path，框架还可能创建自定义加载器加载插件、热部署应用或隔离依赖。不要把“父加载器”机械理解为 Java 对象字段的父子继承，Bootstrap 在 Java 层通常用 null 表示。</p>
+<h2>loadClass 的典型流程</h2>
+<ol>
+<li>先检查当前加载器是否已经定义过该类，避免重复定义。</li>
+<li>把请求委派给父加载器。</li>
+<li>父加载器找不到时，当前加载器调用 <code>findClass</code> 查找字节并定义。</li>
+<li>需要时再解析并链接引用。</li>
+</ol>
+<p>自定义加载器通常重写 <code>findClass</code>，而不是粗暴重写 <code>loadClass</code>。只有明确需要子优先隔离时，才谨慎调整委派顺序，并保留核心 JDK、共享 API 的父优先规则。</p>
+<h2>类型身份示例</h2>
+<pre><code class="language-java">Class&lt;?&gt; a = loaderA.loadClass(&quot;com.example.Plugin&quot;);
+Class&lt;?&gt; b = loaderB.loadClass(&quot;com.example.Plugin&quot;);
+
+System.out.println(a == b); // false
+</code></pre>
+<p>即使 class 文件字节完全相同，a 和 b 仍是两个类型。把 loaderA 的实例强转为 loaderB 看到的 Plugin 会失败；插件系统必须把双方共享的 SPI 接口放到共同父加载器，避免接口本身被加载两份。</p>
+<h2>为什么 SPI 需要上下文加载器</h2>
+<p>JDBC Driver、ServiceLoader 等场景中，框架接口可能由父加载器加载，具体实现位于应用加载器可见范围。严格父优先时，父加载器无法反向看到子加载器的实现。线程上下文类加载器提供一条受控“反向委派”通道，让框架按当前应用上下文发现实现。</p>
+<p>使用线程池时要注意上下文类加载器的设置与恢复，否则可能加载错误应用的资源，或让旧应用加载器被线程长期引用。</p>
+<h2>热部署的泄漏案例</h2>
+<p>应用服务器重新部署时创建新加载器。若旧应用把对象注册进 JVM 全局单例、JDBC 驱动、Timer 线程、ThreadLocal 或第三方静态缓存，旧加载器始终可达，所有旧类元数据和静态对象都无法回收，最终出现 Metaspace OOM。治理关键是停止线程、注销回调、清理 ThreadLocal 和关闭资源，而不是只增加元空间。</p>
+<h2>特殊场景</h2>
+<p>JDBC 等 SPI 的接口由上层加载器加载，实现却在应用类路径中，线程上下文类加载器可让基础代码反向发现实现。插件、应用服务器和热部署常采用子优先或隔离加载器，但要明确共享 API 的加载边界。</p>
+<h2>容易踩坑的地方</h2>
+<p>“打破双亲委派”并不等于完全不委派，成熟实现通常仍对 JDK 和共享 API 采用父优先，只对子应用依赖使用隔离策略。类无法卸载时还要检查加载器是否被线程、缓存或 ThreadLocal 引用。</p>
+<h2>常见问题</h2>
+<h3>追问：如何判断两个 Class 是否相同？</h3>
+<p>不仅看全限定名，还要看定义它们的类加载器；只有名称和定义加载器都相同，JVM 才认为是同一个运行时类型。</p>
+<h3>追问：双亲委派能完全防止恶意类吗？</h3>
+<p>它保护核心名称不被普通应用加载器替换，但完整安全还依赖模块边界、代码来源、权限和输入控制。不能把加载器策略当万能沙箱。</p>
+<h3>追问：为什么 ClassCastException 中类名看起来完全一样？</h3>
+<p>异常信息常只显示全限定名，隐藏了加载器差异。打印 <code>getClassLoader()</code>、模块和 CodeSource 能定位是否发生重复加载。</p>
+<h3>追问：自定义加载器加载的资源如何排查？</h3>
+<p>记录资源 URL、加载器链和定义来源，必要时用 <code>-verbose:class</code> 或 JFR 类加载事件。不要只依赖 IDE classpath 推断运行时可见性。</p>

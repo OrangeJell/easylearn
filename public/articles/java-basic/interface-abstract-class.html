@@ -1,0 +1,83 @@
+<h2>先说结论</h2>
+<blockquote>
+<p>接口描述一组能力和契约，适合让无关类型获得统一行为；抽象类描述同一类对象的共同骨架，可以保存实例状态、构造逻辑和受保护的复用实现。类只能继承一个父类，却可以实现多个接口。</p>
+</blockquote>
+<p>现代接口可以有 <code>default</code>、<code>static</code> 和私有方法，但不能承担普通可变实例状态；抽象类可以定义字段、构造器和非公开模板方法。</p>
+<h2>选择原则</h2>
+<p>对外扩展点优先小而稳定的接口，使调用方依赖抽象；多个实现确实共享状态和流程时，再引入抽象基类。二者可以组合，例如接口定义能力，抽象类提供可选的默认骨架。</p>
+<h2>能力对比</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>接口</th>
+<th>抽象类</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>类型关系</td>
+<td>“能做什么”</td>
+<td>“是什么”及共同骨架</td>
+</tr>
+<tr>
+<td>实现数量</td>
+<td>一个类可实现多个</td>
+<td>一个类只能继承一个</td>
+</tr>
+<tr>
+<td>实例状态</td>
+<td>不能声明普通实例字段</td>
+<td>可以保存受保护状态</td>
+</tr>
+<tr>
+<td>构造过程</td>
+<td>无实例构造器</td>
+<td>可定义构造器并约束初始化</td>
+</tr>
+<tr>
+<td>方法实现</td>
+<td>default、static、private</td>
+<td>任意普通或抽象方法</td>
+</tr>
+<tr>
+<td>演进风险</td>
+<td>新增抽象方法会破坏实现者</td>
+<td>新增具体方法通常兼容，但影响继承层次</td>
+</tr>
+</tbody></table>
+<p>接口字段隐式是 <code>public static final</code> 常量，不适合保存每个对象不同的状态。抽象类的 protected 状态虽然便于复用，却会增加子类与父类实现细节的耦合。</p>
+<h2>组合使用示例</h2>
+<pre><code class="language-java">public interface PaymentChannel {
+    PayResult pay(PayCommand command);
+}
+
+public abstract class AbstractPaymentChannel implements PaymentChannel {
+    @Override
+    public final PayResult pay(PayCommand command) {
+        validate(command);
+        String requestId = createRequestId(command);
+        return doPay(requestId, command);
+    }
+
+    protected abstract PayResult doPay(String requestId, PayCommand command);
+}
+</code></pre>
+<p>接口让调用方只依赖支付能力，抽象类用模板方法复用校验和请求号逻辑。第三方实现可以直接实现接口，不被迫继承骨架，这比把所有能力绑在深继承树上更灵活。</p>
+<h2>默认方法冲突规则</h2>
+<p>若父类和接口提供同签名方法，类方法优先；若两个无继承关系的接口提供相同 default 方法，实现类必须显式重写，并可通过 <code>InterfaceA.super.method()</code> 选择一个实现。子接口重写的默认方法比父接口更具体。</p>
+<p>默认方法主要用于接口兼容演进和少量通用行为。如果逻辑依赖多个可变字段、生命周期或外部资源，把它塞进接口会让契约和实现边界模糊。</p>
+<h2>从领域模型判断</h2>
+<p>判断“猫和狗都能发声”时，<code>Soundable</code> 是能力接口；若所有账户共享账户号、余额校验和开户流程，<code>AbstractAccount</code> 可能有合理的同族抽象。但如果两个类只是碰巧使用同一段重试代码，应提取组件并组合，而不是为了复用而制造继承关系。</p>
+<h2>演进与兼容</h2>
+<p>给接口新增抽象方法会破坏已有实现；默认方法可缓解兼容问题，但不适合塞入依赖具体状态的复杂逻辑。若父类方法与接口默认方法冲突，类方法优先；多个接口冲突时实现类必须显式选择。</p>
+<h2>容易踩坑的地方</h2>
+<p>“接口不能有实现”“抽象类一定不能实例化所以没有构造器”都不准确。抽象类虽不能直接实例化，其构造器仍用于初始化子类中的父类部分。</p>
+<h2>常见问题</h2>
+<h3>追问：什么时候不该用抽象类？</h3>
+<p>当复用关系只是工具代码共享、对象并非同一种类型，或继承会限制未来扩展时，应改用组合和委托。</p>
+<h3>追问：接口可以有构造器吗？</h3>
+<p>不能。接口不代表可实例化对象，也没有实例初始化过程；其中的常量在接口初始化时处理，和抽象类构造器不是一回事。</p>
+<h3>追问：抽象类可以没有抽象方法吗？</h3>
+<p>可以。这样做可以阻止直接实例化并提供受控继承入口，但需要有清晰设计理由，否则普通类加组合可能更简单。</p>
+<h3>追问：为什么优先组合而不是继承？</h3>
+<p>组合通过明确字段委托能力，可以在运行时替换且不暴露内部状态；继承把子类绑定到父类实现和生命周期，父类变化更容易影响所有子类。</p>

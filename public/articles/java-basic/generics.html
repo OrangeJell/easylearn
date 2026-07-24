@@ -1,0 +1,55 @@
+<h2>先说结论</h2>
+<p>泛型把“类型是否正确”的检查提前到编译期，减少强制类型转换，也让容器和算法可以复用。<code>List&lt;String&gt;</code> 明确表达列表只能保存字符串，读取元素时不再需要手动转换。</p>
+<pre><code class="language-java">List&lt;String&gt; names = new ArrayList&lt;&gt;();
+names.add(&quot;Java&quot;);
+String name = names.get(0);
+</code></pre>
+<h2>泛型类与泛型方法</h2>
+<p>泛型类的类型参数作用于整个实例；泛型方法在返回值前单独声明类型参数，它与类是否为泛型无关。</p>
+<pre><code class="language-java">class Box&lt;T&gt; {
+    private T value;
+    void set(T value) { this.value = value; }
+    T get() { return value; }
+}
+
+static &lt;T&gt; T first(List&lt;T&gt; list) {
+    return list.get(0);
+}
+</code></pre>
+<h2>类型擦除</h2>
+<p>Java 泛型主要在编译期工作。编译后，未指定上界的 <code>T</code> 通常被擦除为 <code>Object</code>，指定了上界则擦除为上界类型；编译器会插入必要的类型转换和桥接方法。</p>
+<p>这带来几个限制：</p>
+<ul>
+<li>不能直接 <code>new T()</code>，因为运行时不知道 <code>T</code> 的具体类型。</li>
+<li>不能创建 <code>new T[10]</code>。</li>
+<li>不能使用 <code>obj instanceof List&lt;String&gt;</code>。</li>
+<li><code>List&lt;String&gt;</code> 和 <code>List&lt;Integer&gt;</code> 运行时通常是同一个 <code>Class</code>。</li>
+</ul>
+<h2>为什么泛型是不变的</h2>
+<p>即使 <code>Integer</code> 是 <code>Number</code> 的子类，<code>List&lt;Integer&gt;</code> 也不是 <code>List&lt;Number&gt;</code> 的子类。否则便可以通过 <code>List&lt;Number&gt;</code> 向其中放入 <code>Double</code>，破坏原列表的类型安全。</p>
+<h2>extends 与 super</h2>
+<p><code>? extends T</code> 表示某个未知的 <code>T</code> 子类型，适合读取；<code>? super T</code> 表示某个未知的 <code>T</code> 父类型，适合写入。记忆规则是 <strong>PECS：Producer Extends，Consumer Super</strong>。</p>
+<pre><code class="language-java">double sum(List&lt;? extends Number&gt; values) {
+    double result = 0;
+    for (Number value : values) result += value.doubleValue();
+    return result;
+}
+
+void addDefaults(List&lt;? super Integer&gt; values) {
+    values.add(0);
+    values.add(1);
+}
+</code></pre>
+<p>对于 <code>List&lt;? extends Number&gt;</code>，可以安全读取为 <code>Number</code>，但不能写入具体数字；对于 <code>List&lt;? super Integer&gt;</code>，可以写入 <code>Integer</code>，读取时只能确定为 <code>Object</code>。</p>
+<h2>容易混淆的地方</h2>
+<ol>
+<li>泛型擦除不等于运行时完全没有类型信息，字段和方法签名的泛型信息仍可通过反射读取。</li>
+<li>泛型数组危险是因为数组协变且运行时检查元素类型，而泛型在编译期擦除。</li>
+<li>静态成员属于类，不能直接使用类级别的类型参数。</li>
+<li>原始类型 <code>List</code> 会绕过部分编译期检查，应避免使用。</li>
+</ol>
+<h2>常见问题</h2>
+<h3>追问：为什么不能 new T() 或 new T[]？</h3>
+<p>擦除后运行时不知道 T 的确切类型，无法选择构造器或创建带正确运行时元素类型的数组。可传入 <code>Class&lt;T&gt;</code>、工厂函数，或使用集合替代泛型数组。</p>
+<h3>追问：<code>?</code> 和 <code>T</code> 有什么区别？</h3>
+<p><code>T</code> 是可在同一声明中多次关联的命名类型参数；<code>?</code> 表示某个未知类型，适合表达使用边界，但不能把两处独立通配符假定为同一类型。</p>

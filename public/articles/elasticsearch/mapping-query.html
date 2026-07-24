@@ -1,0 +1,43 @@
+<h2>先说结论</h2>
+<p>Mapping 类似搜索索引的数据结构定义，它决定字段类型、是否分词、能否聚合以及采用什么分析器。生产环境建议显式维护 Mapping，避免动态映射把日期、数字或标识符识别成错误类型。</p>
+<h2>text 与 keyword</h2>
+<p><code>text</code> 字段会经过分析器分词，适合标题、正文等全文检索。<code>keyword</code> 保留完整值，适合状态、标签、订单号、排序和聚合。</p>
+<pre><code class="language-json">{
+  &quot;mappings&quot;: {
+    &quot;properties&quot;: {
+      &quot;title&quot;: { &quot;type&quot;: &quot;text&quot;, &quot;analyzer&quot;: &quot;standard&quot; },
+      &quot;status&quot;: { &quot;type&quot;: &quot;keyword&quot; },
+      &quot;created_at&quot;: { &quot;type&quot;: &quot;date&quot; }
+    }
+  }
+}
+</code></pre>
+<p>同一个字符串可以使用 multi-fields 同时建立 <code>text</code> 和 <code>keyword</code> 子字段，分别服务搜索与聚合，但会增加索引体积。</p>
+<h2>分析器链路</h2>
+<p>分析器通常包含字符过滤器、分词器和词元过滤器。写入时的分析方式应与查询意图匹配。中文检索通常需要选择合适的中文分词方案，并维护词典、同义词和版本发布流程。</p>
+<p>使用 <code>_analyze</code> API 可以查看文本最终生成哪些词项，这是排查“明明有数据却搜不到”的第一步。</p>
+<h2>match 与 term</h2>
+<p><code>match</code> 会分析查询文本，适合全文字段；<code>term</code> 不分析输入，要求精确匹配索引中的词项，适合 <code>keyword</code>、数字、布尔等字段。</p>
+<p>对 <code>text</code> 字段直接使用 <code>term</code> 查询原始句子通常得不到预期结果，因为原文已经被拆成多个词项。反过来，对订单号使用 <code>match</code> 也可能产生意外分词。</p>
+<h2>bool 查询</h2>
+<ul>
+<li><code>must</code>：必须匹配并参与相关性评分。</li>
+<li><code>filter</code>：必须匹配但不参与评分，适合状态和时间范围。</li>
+<li><code>should</code>：提高匹配文档得分，可配置最少匹配数量。</li>
+<li><code>must_not</code>：排除文档。</li>
+</ul>
+<p>不需要相关性评分的条件应放入 <code>filter</code> 上下文，语义更准确，也更有利于缓存和执行优化。</p>
+<h2>Mapping 变更策略</h2>
+<p>许多字段类型和分析器不能在已有索引上直接修改。标准流程是创建带新 Mapping 的版本化索引，使用 <code>_reindex</code> 或业务双写迁移数据，验证后原子切换别名，最后再清理旧索引。</p>
+<h2>容易遇到的问题</h2>
+<ol>
+<li>字段爆炸：动态键生成海量字段，应限制动态映射或改用扁平结构。</li>
+<li>深分页：<code>from + size</code> 越深成本越高，大结果遍历使用 <code>search_after</code> 配合稳定排序。</li>
+<li>聚合内存高：避免直接对超高基数字段做巨型聚合。</li>
+<li>Mapping 不一致：索引模板应纳入版本管理，并在写入前创建索引。</li>
+</ol>
+<h2>常见问题</h2>
+<h3>追问：为什么不能直接修改字段类型？</h3>
+<p>已有倒排和列式数据按旧类型编码，直接改变解释会破坏索引。应创建新版本索引并迁移，验证后原子切换别名。</p>
+<h3>追问：深分页为什么慢？</h3>
+<p>每个分片都要取出并排序 <code>from + size</code> 条候选，再由协调节点合并。持续遍历应使用带稳定排序的 <code>search_after</code>。</p>

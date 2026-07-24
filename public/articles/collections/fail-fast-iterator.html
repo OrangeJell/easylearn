@@ -1,0 +1,68 @@
+<h2>先说结论</h2>
+<blockquote>
+<p>ArrayList、HashMap 等普通集合的迭代器通常是 fail-fast：迭代器记录预期修改次数，发现集合被非迭代器路径结构性修改时尽快抛出异常。并发容器通常提供快照或弱一致迭代，不抛该异常但也不承诺强一致快照。</p>
+</blockquote>
+<p>“fail-safe”不是 Java 集合 API 的正式术语。聊到它时，最好直接说明具体容器到底是复制快照，还是弱一致读取。</p>
+<h2>关键机制</h2>
+<p>结构修改通常指改变元素数量或桶结构，替换某个已有位置的值未必触发检测。修改次数检查是尽力而为，不能依赖它发现所有竞态。</p>
+<h2>modCount 如何工作</h2>
+<p>创建 ArrayList 迭代器时，它把集合当前 <code>modCount</code> 保存为 <code>expectedModCount</code>。每次 <code>next</code>、<code>remove</code> 等操作都会检查二者：</p>
+<pre><code class="language-java">if (modCount != expectedModCount) {
+    throw new ConcurrentModificationException();
+}
+</code></pre>
+<p>通过迭代器自己的 <code>remove</code> 删除后，迭代器会同步更新 expectedModCount，所以这是合法路径。直接调用原集合 <code>remove</code> 只改变 modCount，下一次迭代检查就会失败。</p>
+<p>这不是完整并发检测协议：计数通常不是 volatile，溢出、竞态和检查时机都可能让异常没有立即出现。Java 文档明确不保证用它判断程序线程安全。</p>
+<h2>三种遍历一致性</h2>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>代表容器</th>
+<th>遍历期间修改后的观察</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>fail-fast</td>
+<td>ArrayList、HashMap</td>
+<td>尽力抛出并发修改异常</td>
+</tr>
+<tr>
+<td>快照</td>
+<td>CopyOnWriteArrayList</td>
+<td>始终读取创建迭代器时的数组</td>
+</tr>
+<tr>
+<td>弱一致</td>
+<td>ConcurrentHashMap、ConcurrentLinkedQueue</td>
+<td>可看到部分后续变化，不重复或损坏容器结构</td>
+</tr>
+</tbody></table>
+<p>“弱一致”不等于随机错误，而是容器定义了在不冻结全局状态的前提下可安全遍历。具体是否能看到新增或删除，要以对应类型文档为准。</p>
+<h2>正确删除示例</h2>
+<pre><code class="language-java">Iterator&lt;Order&gt; iterator = orders.iterator();
+while (iterator.hasNext()) {
+    if (iterator.next().expired()) {
+        iterator.remove();
+    }
+}
+
+// 表达简单过滤时更清楚
+orders.removeIf(Order::expired);
+</code></pre>
+<p>Stream 管道中也不要同时修改来源集合。需要转换时收集到新集合；需要并发消费时使用队列或先建立稳定快照。</p>
+<h2>线上常见问题</h2>
+<p>一个定时任务遍历普通 HashMap，另一个请求线程更新它，偶尔抛出异常只是表象。即使改成捕获异常重试，也可能读取不一致数据或无限重试。正确修复是明确共享状态所有权：加锁、换并发容器、不可变快照原子替换，或让单线程负责所有更新。</p>
+<h2>正确修改方式</h2>
+<p>单线程遍历删除使用 <code>Iterator.remove()</code> 或 <code>removeIf()</code>。多线程共享数据应选择合适并发容器并设计一致性语义，而不是捕获异常后重试。</p>
+<h2>容易踩坑的地方</h2>
+<p>即使只有一个线程，在增强 for 循环里直接调用集合的 <code>remove</code> 也可能抛异常；原因是修改路径绕过了当前迭代器，并非一定存在多线程。</p>
+<h2>常见问题</h2>
+<h3>追问：CopyOnWriteArrayList 迭代时能看到新增元素吗？</h3>
+<p>不能。迭代器持有创建时的数组快照，后续写入复制到新数组，不影响当前迭代过程。</p>
+<h3>追问：为什么修改 list.set(i, value) 不一定抛异常？</h3>
+<p>它通常不改变集合结构和元素数量，因此不递增 modCount。但迭代器读到旧值还是新值不能作为线程安全保证。</p>
+<h3>追问：ConcurrentHashMap 遍历会重复同一个元素吗？</h3>
+<p>它提供弱一致迭代，不抛并发修改异常，也不会因为并发更新破坏内部结构。对变化的精确观察边界应以 JDK 契约为准，业务不能把遍历结果当原子快照。</p>
+<h3>追问：如何获得并发 Map 的一致快照？</h3>
+<p>ConcurrentHashMap 没有免费全局快照。可以在外部停止写入或持有统一锁后复制；也可以让写线程发布版本化不可变 Map，以更高写成本换稳定读取。</p>
