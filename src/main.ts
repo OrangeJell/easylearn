@@ -15,3 +15,10 @@ const initialArticleReference=initialArticleRoute?`${initialArticleRoute[1]}/${i
 if(initialArticle&&initialArticleReference)window.__INITIAL_ARTICLE_CONTENT__={reference:initialArticleReference,html:initialArticle.innerHTML}
 const router=createRouter({history:createWebHistory(),routes:[{path:'/',component:()=>import('./views/HomeView.vue')},{path:'/practice/:questionId?',component:()=>import('./views/PracticeView.vue')},{path:'/knowledge/:category/:slug',component:()=>import('./views/KnowledgeView.vue')},{path:'/:pathMatch(.*)*',redirect:'/'}],scrollBehavior(){return{top:0}}})
 createApp(App).use(router).mount('#app')
+if(import.meta.env.PROD)window.addEventListener('load',()=>{
+  const analytics=document.createElement('script')
+  analytics.src='https://static.cloudflareinsights.com/beacon.min.js'
+  analytics.async=true
+  analytics.dataset.cfBeacon=JSON.stringify({token:'3c66ba2c14a94429851a2b5fc0db3e2f'})
+  document.head.append(analytics)
+},{once:true})

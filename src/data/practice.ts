@@ -7,11 +7,15 @@ export type PracticeQuestion={
   difficulty?:string
   durationMinutes?:number
   type?:PracticeQuestionType
-  weight?:number
   prompt:string
   shortAnswer?:string
   answer:string[]
+  answerHtml?:string
   keyPoints:string[]
+  problemAnalysis?:string[]
+  problemAnalysisHtml?:string
+  pitfalls?:string[]
+  pitfallsHtml?:string
   relatedArticles:string[]
   diagram?:PracticeDiagram
   followUps?:PracticeQuestion[]
