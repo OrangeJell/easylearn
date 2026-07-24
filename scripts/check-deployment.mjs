@@ -7,7 +7,7 @@ const dist=join(project,'dist')
 function requireFile(path){if(!existsSync(path)||!statSync(path).isFile())throw new Error(`缺少部署文件: ${path.replace(`${project}/`,'')}`)}
 function filesIn(path){return readdirSync(path,{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?filesIn(join(path,entry.name)):[join(path,entry.name)])}
 
-for(const file of['index.html','404.html','robots.txt','sitemap.xml','_headers','_redirects','images/knowledge-workbench.jpg','practice/index.html','practice/index.json'])requireFile(join(dist,file))
+for(const file of['index.html','404.html','robots.txt','sitemap.xml','_headers','_redirects','googleb6aedc3c677b66bd.html','images/knowledge-workbench.jpg','practice/index.html','practice/index.json'])requireFile(join(dist,file))
 const practiceIndex=JSON.parse(readFileSync(join(dist,'practice/index.json'),'utf8'))
 const detailFiles=filesIn(join(dist,'practice/questions')).filter(file=>file.endsWith('.json'))
 const routeFiles=filesIn(join(dist,'practice')).filter(file=>file.endsWith('/index.html')&&file!==join(dist,'practice/index.html'))
