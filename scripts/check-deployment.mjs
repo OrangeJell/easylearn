@@ -27,6 +27,7 @@ if(redirects.some(line=>line.split(/\s+/)[0].includes('*')))throw new Error('路
 const home=readFileSync(join(dist,'index.html'),'utf8')
 if(!home.includes('rel="canonical"')||!home.includes('application/ld+json'))throw new Error('首页缺少 canonical 或结构化数据')
 if(!home.includes('Java 面试知识库')||!home.includes('class="home-category-grid"')||!home.includes('class="home-article-list"'))throw new Error('首页缺少知识分类或高频文章首屏内容')
+if(!home.includes('static.cloudflareinsights.com/beacon.min.js')||!home.includes('3c66ba2c14a94429851a2b5fc0db3e2f'))throw new Error('首页缺少 Cloudflare Web Analytics')
 const hostedBuild=process.env.CF_PAGES==='1'||process.env.VERCEL==='1'||process.env.NETLIFY==='true'
 if(hostedBuild&&[sitemap,home,readFileSync(join(dist,'robots.txt'),'utf8')].some(content=>content.includes('localhost')))throw new Error('线上 SEO 产物仍包含 localhost')
 const emittedSourceFiles=filesIn(join(project,'src')).filter(file=>file.endsWith('.vue.js')||/(^|\/)src\/(main|catalog)\.js$/.test(file)||file.endsWith('/data/practice.js'))
