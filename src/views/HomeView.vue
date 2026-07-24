@@ -113,7 +113,7 @@ onMounted(updateHomeSeo)
       </div>
 
       <aside class="home-practice">
-        <header><small>QUICK PRACTICE</small><span>约 1 分钟 / 题</span></header>
+        <header><small>QUICK PRACTICE</small><span>约 1–2 分钟 / 题</span></header>
         <h2>换一种方式检验<br>自己是不是真懂了</h2>
         <div class="home-question-sample">
           <span>随机一问</span>

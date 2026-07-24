@@ -77,6 +77,21 @@
 .spoken-answer.compact .answer-points li{position:relative;padding-left:13px;line-height:1.7}
 .spoken-answer.compact .answer-points li:before{content:"";position:absolute;left:0;top:.7em;width:4px;height:4px;border-radius:50%;background:var(--positive-muted)}
 
+.practice-rich{min-width:0;color:var(--text);font-size:15px;line-height:1.9}
+.spoken-answer.compact .practice-rich{max-width:700px;margin-left:auto;margin-right:auto;font-size:16px;line-height:1.95}
+.practice-rich p{margin:16px 0;line-break:strict;text-wrap:pretty}
+.practice-rich p:first-child{margin-top:0}
+.practice-rich p:last-child{margin-bottom:0}
+.practice-rich strong{color:var(--answer-label);font-weight:800}
+.practice-rich code{padding:2px 5px;border:1px solid var(--answer-line);border-radius:3px;background:var(--soft);color:var(--accent);font:500 .9em/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}
+.practice-rich pre{max-width:100%;margin:18px 0;padding:15px 17px;border:1px solid rgba(255,255,255,.08);border-radius:5px;background:var(--action-bg);color:var(--action-text);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.practice-rich pre code{padding:0;border:0;border-radius:0;background:transparent;color:inherit;font-size:12px;line-height:1.75;white-space:pre;overflow-wrap:normal}
+.practice-rich ul,.practice-rich ol{display:grid;gap:8px;margin:14px 0 18px;padding-left:22px}
+.practice-rich li{padding-left:3px;line-height:1.8}
+.practice-rich li::marker{color:var(--positive);font-weight:800}
+.practice-rich blockquote{margin:20px 0 0;padding:14px 16px;border-left:3px solid var(--positive);background:rgba(47,125,91,.07);color:var(--answer-label)}
+.practice-rich blockquote p{margin:0}
+
 .question-diagram{margin-top:20px;padding:17px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .question-diagram>header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .question-diagram>header span{font-size:11px;font-weight:800}
@@ -95,6 +110,30 @@
 .question-related a b{font-size:11px;line-height:1.45;overflow-wrap:anywhere}
 .question-related a i{font-style:normal;color:var(--accent);transition:transform .2s ease}
 .question-related a:hover i{transform:translate(2px,-2px)}
+
+.answer-extensions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin-top:30px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.answer-extension + .answer-extension{border-left:1px solid var(--line)}
+.answer-extensions:has(.answer-extension[open]){grid-template-columns:1fr}
+.answer-extensions:has(.answer-extension[open]) .answer-extension + .answer-extension{border-top:1px solid var(--line);border-left:0}
+.answer-extension summary{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:78px;padding:15px 18px;cursor:pointer;list-style:none;transition:background .2s ease}
+.answer-extension summary::-webkit-details-marker{display:none}
+.answer-extension summary:hover{background:var(--code)}
+.answer-extension summary>span{display:flex;flex-direction:column;min-width:0}
+.answer-extension summary small{color:var(--muted);font-size:9px;font-weight:700}
+.answer-extension summary b{font-size:14px;line-height:1.45}
+.answer-extension summary>i{position:relative;width:24px;height:24px;flex:0 0 24px;border:1px solid var(--line);border-radius:50%}
+.answer-extension summary>i:before,.answer-extension summary>i:after{content:"";position:absolute;left:6px;right:6px;top:11px;height:1px;background:var(--muted);transition:transform .2s ease}
+.answer-extension summary>i:after{transform:rotate(90deg)}
+.answer-extension[open] summary>i:after{transform:rotate(0)}
+.answer-extension[open] summary{background:var(--code)}
+.answer-extension>div{padding:4px 18px 20px;border-top:1px solid var(--line)}
+.answer-extension p{margin:14px 0 0;color:var(--muted);font-size:13px;line-height:1.85}
+.answer-extension .practice-rich{max-width:none;color:var(--muted);font-size:13px;line-height:1.85}
+.answer-extension .practice-rich p{margin:14px 0 0}
+.answer-extension .practice-rich ul{margin:14px 0 5px}
+.analysis-extension summary b{color:var(--answer-label)}
+.pitfalls-extension summary b{color:var(--accent)}
+.pitfalls-extension .practice-rich strong,.pitfalls-extension .practice-rich li::marker{color:var(--accent)}
 
 .follow-up-list{margin-top:34px;padding-top:20px;border-top:1px solid var(--line)}
 .follow-up-list>header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
@@ -169,10 +208,20 @@
   .spoken-answer.compact .answer-paragraph p{font-size:16px;line-height:2}
   .spoken-answer.compact .answer-points{margin-top:27px;padding-top:20px}
   .spoken-answer.compact .answer-points ol{display:grid;gap:9px;margin-top:11px}
+  .spoken-answer.compact .practice-rich{max-width:none;font-size:16px;line-height:2}
+  .practice-rich pre{margin-left:-5px;margin-right:-5px;padding:14px 12px}
+  .practice-rich pre code{font-size:11px}
+  .practice-rich ul,.practice-rich ol{padding-left:20px}
   .question-related{grid-template-columns:1fr;margin-top:17px}
   .question-related>span{grid-row:auto;margin-bottom:1px}
   .question-related a{min-height:38px;padding:8px 2px;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent}
   .question-related a:hover{transform:none;background:transparent}
+  .answer-extensions{grid-template-columns:1fr;margin-top:25px}
+  .answer-extension + .answer-extension{border-left:0;border-top:1px solid var(--line)}
+  .answer-extension summary{min-height:69px;padding:13px 5px}
+  .answer-extension>div{padding:2px 5px 17px}
+  .answer-extension p{font-size:14px;line-height:1.85}
+  .answer-extension .practice-rich{font-size:14px;line-height:1.85}
   .follow-up-list{margin-top:28px}
   .follow-up-list>.question-node{padding-left:14px}
   .question-node.depth-1 .follow-up-list>.question-node{padding-left:13px}

@@ -7,20 +7,7 @@ const props=withDefaults(defineProps<{question:PracticeQuestion;depth?:number;in
 const answerVisible=ref(false)
 const related=computed(()=>props.question.relatedArticles.map(articleByRef).filter((item):item is ArticleLink=>Boolean(item)))
 
-function sampleFollowUps(items:PracticeQuestion[]=[]){
-  if(items.length<=1)return items
-  const pool=[...items],output:PracticeQuestion[]=[]
-  const count=Math.random()<.5?1:2
-  while(pool.length&&output.length<count){
-    const total=pool.reduce((sum,item)=>sum+(item.weight||1),0)
-    let cursor=Math.random()*total,index=0
-    for(;index<pool.length;index++){cursor-=pool[index].weight||1;if(cursor<=0)break}
-    output.push(pool.splice(Math.min(index,pool.length-1),1)[0])
-  }
-  return output
-}
-
-const visibleFollowUps=sampleFollowUps(props.question.followUps)
+const visibleFollowUps=computed(()=>props.question.followUps||[])
 function toggleAnswer(){answerVisible.value=!answerVisible.value}
 </script>
 
@@ -43,8 +30,9 @@ function toggleAnswer(){answerVisible.value=!answerVisible.value}
       <div v-if="answerVisible" class="question-reveal-content">
         <section class="spoken-answer" :class="{compact:(question.durationMinutes||0)<=1}" aria-live="polite">
           <div class="answer-heading"><span>参考回答</span><small>约 {{question.durationMinutes||2}} 分钟 · 口语表达</small></div>
-          <section v-if="question.shortAnswer" class="quick-answer"><small>先说结论</small><p>{{question.shortAnswer}}</p></section>
-          <div class="answer-copy" :class="{long:(question.durationMinutes||0)>=3}">
+          <section v-if="question.shortAnswer" class="quick-answer"><small>我的判断</small><p>{{question.shortAnswer}}</p></section>
+          <div v-if="question.answerHtml" class="practice-rich answer-rich" v-html="question.answerHtml"/>
+          <div v-else class="answer-copy" :class="{long:(question.durationMinutes||0)>=3}">
             <div v-for="(paragraph,paragraphIndex) in question.answer" :key="paragraph" class="answer-paragraph">
               <span v-if="(question.durationMinutes||0)>=3">{{String(paragraphIndex+1).padStart(2,'0')}}</span>
               <p>{{paragraph}}</p>
@@ -70,6 +58,19 @@ function toggleAnswer(){answerVisible.value=!answerVisible.value}
           <span>关联知识</span>
           <RouterLink v-for="item in related" :key="item.file" :to="articlePath(item)"><b>{{item.title}}</b><i>↗</i></RouterLink>
         </nav>
+
+        <section v-if="depth===0&&(question.problemAnalysisHtml||question.problemAnalysis?.length||question.pitfallsHtml||question.pitfalls?.length)" class="answer-extensions" aria-label="答题补充">
+          <details v-if="question.problemAnalysisHtml||question.problemAnalysis?.length" class="answer-extension analysis-extension">
+            <summary><span><small>思路拆解</small><b>问题分析</b></span><i aria-hidden="true"/></summary>
+            <div v-if="question.problemAnalysisHtml" class="practice-rich" v-html="question.problemAnalysisHtml"/>
+            <div v-else><p v-for="paragraph in question.problemAnalysis" :key="paragraph">{{paragraph}}</p></div>
+          </details>
+          <details v-if="question.pitfallsHtml||question.pitfalls?.length" class="answer-extension pitfalls-extension">
+            <summary><span><small>容易答偏</small><b>踩坑误区</b></span><i aria-hidden="true"/></summary>
+            <div v-if="question.pitfallsHtml" class="practice-rich" v-html="question.pitfallsHtml"/>
+            <div v-else><p v-for="paragraph in question.pitfalls" :key="paragraph">{{paragraph}}</p></div>
+          </details>
+        </section>
       </div>
     </Transition>
   </article>
