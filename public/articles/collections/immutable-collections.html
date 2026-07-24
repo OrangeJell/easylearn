@@ -1,0 +1,54 @@
+<h2>先说结论</h2>
+<blockquote>
+<p><code>Collections.unmodifiableList</code> 返回原集合的只读视图，不能通过该视图修改，但原集合变化仍会反映出来；<code>List.copyOf</code> 或 <code>List.of</code> 产生不可修改的独立集合，更适合作为稳定快照。二者通常都只保证容器结构不可变，不保证元素对象不可变。</p>
+</blockquote>
+<p>真正的深度不可变要求集合和其中可达的元素状态都不能被外部修改。</p>
+<h2>关键机制</h2>
+<p>不可修改视图把写操作转为 <code>UnsupportedOperationException</code>，读取仍委托给底层集合。防御性复制则切断容器结构共享，代价是 O(n) 的时间和额外内存。</p>
+<h2>三种常见写法对比</h2>
+<pre><code class="language-java">List&lt;String&gt; source = new ArrayList&lt;&gt;(List.of(&quot;A&quot;, &quot;B&quot;));
+
+List&lt;String&gt; view = Collections.unmodifiableList(source);
+List&lt;String&gt; copy = List.copyOf(source);
+List&lt;String&gt; literal = List.of(&quot;A&quot;, &quot;B&quot;);
+
+source.add(&quot;C&quot;);
+// view 能看到 C，copy 和 literal 不受影响
+</code></pre>
+<p><code>unmodifiableList</code> 是权限受限的窗口，<code>copyOf</code> 是当前内容快照，<code>of</code> 是直接构造不可修改集合。<code>copyOf</code> 如果输入本来就是兼容的不可修改集合，JDK 可能复用实例，因此不要依赖对象身份。</p>
+<h2>浅不可变与深不可变</h2>
+<pre><code class="language-java">List&lt;User&gt; users = List.copyOf(mutableUsers);
+users.get(0).setName(&quot;changed&quot;); // 如果 User 可变，仍然能修改元素
+</code></pre>
+<p>容器不能增删并不保护元素。深度不可变通常需要元素本身是不可变值对象，构造时复制可变输入，并且 getter 不暴露内部数组、Date、集合等可变引用。</p>
+<pre><code class="language-java">public final class OrderSnapshot {
+    private final List&lt;OrderLine&gt; lines;
+
+    public OrderSnapshot(List&lt;OrderLine&gt; lines) {
+        this.lines = List.copyOf(lines);
+    }
+
+    public List&lt;OrderLine&gt; lines() {
+        return lines;
+    }
+}
+</code></pre>
+<p>前提是 OrderLine 也不可变。如果其中含 byte[]，仍需在构造和读取边界复制数组。</p>
+<h2>不可变对并发的价值</h2>
+<p>正确构造并安全发布后，不可变对象可以被多个线程无锁共享，因为状态不会再变化。配置中心常构造一整棵不可变配置，再通过 AtomicReference 一次替换；所有读取要么看到旧版本，要么看到新版本，不会看到更新一半。</p>
+<p>这并不意味着创建不可变集合的过程自动线程安全。若一边复制 source，另一边无锁修改 source，复制结果仍可能不一致或抛异常。</p>
+<h2>大数据量下的方案</h2>
+<p>每次修改都复制百万元素代价很高。可以使用结构共享的持久化集合、按分片复制、事件溯源，或把稳定大主体与小变化层分开。不可变设计的目标是清晰所有权，不是机械地在每次写入复制整个世界。</p>
+<h2>实际用时要注意什么</h2>
+<p>构造器接收集合时可先复制，getter 返回不可变集合，防止调用方越过对象不变量。高频大集合复制成本较高时，可采用持久化数据结构、版本化快照或明确所有权模型。</p>
+<h2>容易踩坑的地方</h2>
+<p><code>final List</code> 只表示引用不能重新赋值，列表仍可能修改；不可修改集合也不等于线程安全，若元素本身可变，多个线程仍可能竞争修改元素。</p>
+<h2>常见问题</h2>
+<h3>追问：List.of 能放 null 吗？</h3>
+<p>不能，工厂方法会拒绝 null。迁移旧代码时要先明确 null 是非法值还是需要其他表达方式。</p>
+<h3>追问：Collections.unmodifiableList 是线程安全的吗？</h3>
+<p>不是。它只禁止通过该视图写入，底层列表仍可能被其他引用并发修改；读取也需要原集合正确同步。</p>
+<h3>追问：copyOf 会复制元素对象吗？</h3>
+<p>不会，它复制的是元素引用，所以是浅复制。深复制需要逐个构造独立元素，并明确对象图中的共享边界。</p>
+<h3>追问：Stream.toList 返回的列表可修改吗？</h3>
+<p>现代 JDK 的 <code>Stream.toList()</code> 返回不可修改列表，但具体类型不是 API 契约。需要可变列表应显式收集到 <code>ArrayList</code>。</p>

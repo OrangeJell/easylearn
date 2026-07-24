@@ -12,6 +12,8 @@ export type Article={
   minutes:number
   level:string
   file:string
+  contentVersion:string
+  headings:string[]
   prerequisites:string[]
   related:string[]
   next:string[]
@@ -24,18 +26,23 @@ export const categories=[...new Map(articles.map(article=>[article.category,{nam
 export const articlePath=(article:Article)=>`/knowledge/${article.categorySlug}/${article.slug}`
 export const articleByRef=(reference:string)=>articles.find(article=>`${article.categorySlug}/${article.slug}`===reference)
 
-const markdownLoaders=import.meta.glob('./content/**/*.md',{query:'?raw',import:'default'}) as Record<string,()=>Promise<string>>
-const sourceCache=new Map<string,string>()
+const contentCache=new Map<string,string>()
+const contentRequests=new Map<string,Promise<string>>()
+const initialContent=window.__INITIAL_ARTICLE_CONTENT__
+if(initialContent){contentCache.set(initialContent.reference,initialContent.html);delete window.__INITIAL_ARTICLE_CONTENT__}
 
-export async function loadArticleSource(article:Article){
-  const cached=sourceCache.get(article.file)
+export async function loadArticleHtml(article:Article){
+  const reference=`${article.categorySlug}/${article.slug}`
+  const cached=contentCache.get(reference)
   if(cached)return cached
-  const loader=markdownLoaders[`./content/${article.file}.md`]
-  if(!loader)throw new Error(`找不到文章正文: ${article.file}`)
-  const raw=await loader()
-  const source=raw.replace(/^---\s*\n[\s\S]*?\n---\s*\n/,'')
-  sourceCache.set(article.file,source)
-  return source
+  const pending=contentRequests.get(reference)
+  if(pending)return pending
+  const request=fetch(`/articles/${article.categorySlug}/${article.slug}.html?v=${article.contentVersion}`).then(async response=>{
+    if(!response.ok)throw new Error(`找不到文章正文: ${article.file}`)
+    const html=await response.text();contentCache.set(reference,html);return html
+  }).finally(()=>contentRequests.delete(reference))
+  contentRequests.set(reference,request)
+  return request
 }
 
-export function prefetchArticle(article?:Article){if(article&&!sourceCache.has(article.file))void loadArticleSource(article)}
+export function prefetchArticle(article?:Article){if(article&&!contentCache.has(`${article.categorySlug}/${article.slug}`))void loadArticleHtml(article)}

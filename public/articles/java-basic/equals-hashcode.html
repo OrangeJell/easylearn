@@ -1,0 +1,15 @@
+<h2>先说结论</h2>
+<p><code>==</code> 比较基本类型的值，比较引用类型时判断是否指向同一对象。<code>equals</code> 默认与 <code>==</code> 相同，但值对象通常会重写它。<code>hashCode</code> 为哈希容器提供桶定位依据。</p>
+<h2>equals 与 hashCode 契约</h2>
+<p>两个对象 equals 相等，它们的 hashCode 必须相等；hashCode 相等，equals 不一定相等。重写 equals 时必须同时重写 hashCode。</p>
+<h2>常见错误</h2>
+<p>只重写 equals 会导致逻辑上相等的对象进入 HashSet 后仍然重复，或者无法从 HashMap 中正确取回。</p>
+<h2>HashMap 为什么同时需要两者</h2>
+<p>查询时先用 <code>hashCode</code> 定位桶，再用 <code>equals</code> 确认具体键。哈希只是缩小范围，不是相等性的最终判断。只重写 <code>equals</code> 会让逻辑相等的对象落入不同桶，导致 <code>get</code> 失败或 <code>HashSet</code> 出现重复。</p>
+<h2>常见问题</h2>
+<h3>追问 1：hashCode 相同，equals 一定为 true 吗？</h3>
+<p>不一定。哈希空间有限，碰撞必然存在，所以命中桶后必须继续比较 <code>equals</code>。</p>
+<h3>追问 2：为什么不建议用可变对象作为键？</h3>
+<p>若参与哈希计算的字段在插入后变化，新哈希位置与原桶不一致，即使对象仍在 Map 中也可能无法查询和删除。</p>
+<h3>追问 3：BigDecimal 比较有什么陷阱？</h3>
+<p><code>1.0</code> 与 <code>1.00</code> 使用 <code>compareTo</code> 数值相等，但 <code>equals</code> 还比较精度。金额逻辑必须明确需要数值相等还是严格对象相等。</p>

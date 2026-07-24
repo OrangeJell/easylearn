@@ -1,0 +1,38 @@
+<h2>先说结论</h2>
+<blockquote>
+<p>文档写入后先进入内存缓冲并记录 translog，refresh 会把缓冲内容形成新的 Lucene segment 并打开搜索视图，因此搜索通常要等下一次 refresh 才可见。这个秒级间隔使 Elasticsearch 被称为近实时搜索。</p>
+</blockquote>
+<p>refresh 不是把所有数据持久化到磁盘的同义词，flush 与 translog 生命周期相关，merge 则合并小 segment 并清理删除标记。</p>
+<h2>三个操作</h2>
+<p>refresh 提升搜索可见性但增加小 segment 和后续合并压力；flush 建立持久化提交点并截断可安全清理的 translog；merge 在后台重写 segment，可能消耗磁盘 I/O 和 CPU。</p>
+<h2>refresh 的内部意义</h2>
+<p>写入进入内存 buffer，Lucene 将其构建为 segment 并打开新的 reader，搜索请求才看得到。refresh 不必每次把所有 segment 合并，也不等于把数据完整 fsync 到物理磁盘。默认刷新周期是延迟与写吞吐的折中，低延迟场景可以缩短，但每次 refresh 会增加 segment 数和后续 merge。</p>
+<pre><code class="language-text">写入 -&gt; buffer/translog -&gt; refresh -&gt; 可搜索 segment
+                         ↓
+                   flush/commit -&gt; 恢复提交点
+                         ↓
+                   merge -&gt; 合并小 segment、回收删除标记
+</code></pre>
+<h2>translog 与 durability</h2>
+<p>translog 记录尚未安全提交到 Lucene commit point 的操作，节点恢复时可重放它。<code>index.translog.durability=request</code> 通常在每次请求确认前 fsync，可靠性和延迟更高；<code>async</code> 按周期刷盘，可能在节点崩溃时丢失最近窗口的操作。这个配置解决持久化恢复，不改变搜索 refresh 可见性。</p>
+<p>副本确认和 translog fsync 也不是跨数据库事务。数据库已提交但 ES 写入未成功，仍需 Outbox/CDC 和重试对账。</p>
+<h2>merge 为什么会造成抖动</h2>
+<p>Lucene segment 近似不可变，删除只是标记；merge 读取多个 segment、重写新 segment 并替换旧文件，期间消耗磁盘读写、CPU、临时空间和 page cache。高更新/删除、频繁 refresh、force merge 都会提高 merge 压力。</p>
+<p>监控 segment 数、merge time、磁盘 utilization、refresh time、translog size 和 query latency。不要在持续写入热索引上频繁 force merge；只读历史索引才可能在受控窗口做合并和压缩。</p>
+<h2>写入和搜索的策略</h2>
+<p>批量导入可以临时放宽 refresh、关闭不必要副本，完成后恢复并等待健康；在线订单/日志写入要以端到端延迟、可见性和可靠性目标为依据。对少量必须立即检索的写入使用 <code>refresh=wait_for</code>，比每条 <code>refresh=true</code> 更能控制刷新频率。</p>
+<h2>“写后可搜”测试</h2>
+<p>测试不能只用单线程写一条再立刻查，因为缓存和时序可能掩盖问题。应验证高峰 bulk、refresh 延迟、节点重启、主副本切换和搜索 P99，记录写入确认时间、首次可见时间和数据恢复结果，分别定义 SLO。</p>
+<h2>实践选择</h2>
+<p>需要“写后立刻可搜”时可等待 refresh 或针对少量请求使用合适刷新策略，但批量导入应适当拉长刷新间隔，完成后恢复。按 ID 读取与普通搜索走不同可见性路径。</p>
+<h2>容易踩坑的地方</h2>
+<p>每次写入都强制 refresh 会显著降低吞吐。手工 force merge 适合只读历史索引的特定维护窗口，不应在持续写入的热索引上频繁执行。</p>
+<h2>常见问题</h2>
+<h3>追问：写入成功是否代表断电不丢？</h3>
+<p>还取决于 translog durability、副本确认和故障范围；搜索可见、操作系统缓存和持久化可靠性是不同维度，需要结合配置解释。</p>
+<h3>追问：refresh=true 可以解决所有一致性问题吗？</h3>
+<p>只提高当前分片搜索可见性，不解决数据库同步、跨副本故障、并发覆盖和请求失败重试。它还会增加刷新与 merge 压力。</p>
+<h3>追问：flush 越频繁越安全吗？</h3>
+<p>频繁 flush 会增加 I/O 和 commit 成本；应根据 translog 大小、恢复时间和 durability 目标选择，而不是为了“看起来落盘”不断 flush。</p>
+<h3>追问：为什么删除很多文档后磁盘没下降？</h3>
+<p>删除先写标记，空间要等后台 merge 重写 segment 才回收；旧 reader、PIT 和快照也可能延迟文件删除。</p>

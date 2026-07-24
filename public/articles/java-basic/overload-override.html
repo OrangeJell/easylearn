@@ -1,0 +1,91 @@
+<h2>先说结论</h2>
+<blockquote>
+<p>重载发生在同一个类型体系中，方法名相同但参数列表不同，编译器根据引用的静态类型和实参选择方法；重写发生在父子类之间，子类提供相同签名的实例方法，运行期根据对象实际类型动态分派。</p>
+</blockquote>
+<p>仅修改返回类型不能构成重载。重写可以使用协变返回类型，访问权限不能更严格，抛出的受检异常范围不能比父方法更宽。</p>
+<h2>关键机制</h2>
+<p>重载候选可能涉及精确匹配、基本类型提升、装箱和可变参数，复杂组合容易产生歧义。重写依赖虚方法调用；<code>static</code> 方法属于类，只会被隐藏，<code>private</code> 方法对子类不可见。</p>
+<h2>规则对比</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>重载 Overload</th>
+<th>重写 Override</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>决定时机</td>
+<td>编译期</td>
+<td>运行期</td>
+</tr>
+<tr>
+<td>发生位置</td>
+<td>同类或继承体系都可形成候选</td>
+<td>父子类实例方法之间</td>
+</tr>
+<tr>
+<td>参数列表</td>
+<td>必须不同</td>
+<td>必须相同</td>
+</tr>
+<tr>
+<td>返回类型</td>
+<td>不参与重载区分</td>
+<td>相同或协变子类型</td>
+</tr>
+<tr>
+<td>访问权限</td>
+<td>独立决定</td>
+<td>不能比父方法更严格</td>
+</tr>
+<tr>
+<td>受检异常</td>
+<td>独立决定</td>
+<td>不能扩大父方法声明范围</td>
+</tr>
+</tbody></table>
+<h2>重载决议示例</h2>
+<pre><code class="language-java">void print(long value) {}
+void print(Integer value) {}
+void print(int... values) {}
+
+print(1); // int 基本类型提升为 long
+</code></pre>
+<p>编译器不会简单地“随便找一个能转的”。常见优先级可概括为精确匹配、基本类型拓宽、装箱/拆箱、可变参数，但泛型、继承和 null 会让候选更复杂。公共 API 应避免让调用者依赖微妙规则。</p>
+<pre><code class="language-java">void handle(String value) {}
+void handle(Integer value) {}
+
+// handle(null); // 编译失败：两个候选都适用且互不更具体
+</code></pre>
+<h2>动态绑定示例</h2>
+<pre><code class="language-java">class Parent {
+    Number value() { return 1; }
+    static String type() { return &quot;parent&quot;; }
+}
+
+class Child extends Parent {
+    @Override Integer value() { return 2; }
+    static String type() { return &quot;child&quot;; }
+}
+
+Parent ref = new Child();
+ref.value(); // Child.value，实例方法动态分派
+ref.type();  // Parent.type，静态方法按引用类型解析
+</code></pre>
+<p>协变返回让子类返回更具体的类型。编译器处理泛型重写时还可能生成桥接方法，以维持类型擦除后的多态契约；反射扫描方法时可能看到 <code>isBridge()</code> 为 true 的合成方法。</p>
+<h2>API 设计建议</h2>
+<p>同名重载应该具有一致含义和一致失败语义，例如 <code>of(String)</code> 与 <code>of(Path)</code> 都创建同一种值。布尔参数、相邻数字类型和 null 容易让重载难懂，复杂配置更适合建造者或不同方法名。</p>
+<h2>实际用时要注意什么</h2>
+<p>重载应保持语义一致，例如不同参数形式都表示同一操作。重写始终加 <code>@Override</code>，让编译器发现拼写或签名错误；构造器中避免调用可重写方法，以免子类状态尚未初始化。</p>
+<h2>容易踩坑的地方</h2>
+<p>字段访问没有运行时多态，取决于引用声明类型。返回值不参与普通重载决议，所以不能定义两个仅返回类型不同的方法。</p>
+<h2>常见问题</h2>
+<h3>追问：null 传给多个重载方法会怎样？</h3>
+<p>编译器选择更具体的参数类型；若两个候选互不为子类型，例如 <code>String</code> 与 <code>Integer</code>，调用会产生编译歧义，需要显式强转。</p>
+<h3>追问：构造方法可以重载或重写吗？</h3>
+<p>构造器可以通过不同参数列表重载，但不会被继承，因此不能重写。子类构造器只是在第一步显式或隐式调用父类构造器。</p>
+<h3>追问：final 方法和抽象方法有什么关系？</h3>
+<p>final 禁止子类重写，abstract 要求子类提供实现，同一方法不能同时满足两种互斥语义。private 方法也不能被子类重写。</p>
+<h3>追问：方法参数的泛型不同能构成重载吗？</h3>
+<p><code>method(List&lt;String&gt;)</code> 与 <code>method(List&lt;Integer&gt;)</code> 擦除后签名相同，不能同时声明。泛型 API 设计必须考虑类型擦除后的 JVM 方法描述符。</p>

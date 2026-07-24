@@ -1,0 +1,239 @@
+<h2>先说结论</h2>
+<blockquote>
+<p>JVM 内存配置不能只设置 <code>Xmx</code>，应从容器或机器总内存反推，给 Java Heap、Metaspace、Direct Memory、线程栈、Code Cache、JVM Native 内存和安全余量分别预留空间；再根据对象存活、分配速率、GC 目标和压测结果调整，而不是照搬固定比例。</p>
+</blockquote>
+<h2>JVM 进程内存由什么组成</h2>
+<pre><code class="language-text">容器 / 机器内存上限
+├── Java Heap
+│   ├── Young Generation
+│   └── Old Generation
+├── Metaspace
+├── Direct Memory
+├── Thread Stack
+├── Code Cache
+├── GC / JVM Native Structures
+├── Memory Mapped Files
+└── 操作系统与安全余量
+</code></pre>
+<p><code>-Xmx4g</code> 只限制 Java Heap 最大值，不代表 Java 进程最多使用 4GB。若容器 Limit 也是 4GB，Heap 之外的内存很容易触发 OOMKilled。</p>
+<h2>先确定业务目标</h2>
+<p>内存配置前要明确：</p>
+<ul>
+<li>单实例正常和峰值 QPS。</li>
+<li>P95/P99 延迟目标。</li>
+<li>每个请求平均与最大对象分配量。</li>
+<li>是否大量使用 Netty、NIO、压缩、序列化或本地库。</li>
+<li>最大线程数和线程池数量。</li>
+<li>缓存大小和对象生命周期。</li>
+<li>允许的 GC 停顿和吞吐损失。</li>
+<li>单实例故障后其他实例能否承接流量。</li>
+</ul>
+<p>同样 8GB 容器，普通 Spring Boot CRUD 服务和 Netty 网关的 Heap/Direct Memory 分配应不同。</p>
+<h2>一个 8GB 容器的示例</h2>
+<p>假设某 Spring Boot API 服务：</p>
+<ul>
+<li>容器 Limit：8GiB。</li>
+<li>线程数量控制在 300 以内。</li>
+<li>少量 NIO，没有超大堆外缓存。</li>
+<li>使用 G1，要求 P99 延迟稳定。</li>
+</ul>
+<p>可以从以下初始预算开始压测：</p>
+<table>
+<thead>
+<tr>
+<th>区域</th>
+<th align="right">初始预算</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Java Heap</td>
+<td align="right">4.5～5GiB</td>
+<td>保存业务对象与缓存</td>
+</tr>
+<tr>
+<td>Metaspace</td>
+<td align="right">256～512MiB</td>
+<td>类元数据，按框架与动态类数量验证</td>
+</tr>
+<tr>
+<td>Direct Memory</td>
+<td align="right">512MiB～1GiB</td>
+<td>NIO、网络和压缩缓冲</td>
+</tr>
+<tr>
+<td>Thread Stack</td>
+<td align="right">300～600MiB</td>
+<td>线程数乘以单线程栈预算</td>
+</tr>
+<tr>
+<td>Code Cache / JVM Native</td>
+<td align="right">256～512MiB</td>
+<td>JIT、GC 和 JVM 内部结构</td>
+</tr>
+<tr>
+<td>安全余量</td>
+<td align="right">1GiB 左右</td>
+<td>峰值、Native 波动和监控 Agent</td>
+</tr>
+</tbody></table>
+<p>示例启动参数：</p>
+<pre><code class="language-text">-Xms5g
+-Xmx5g
+-XX:MaxMetaspaceSize=512m
+-XX:MaxDirectMemorySize=768m
+-Xss1m
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:HeapDumpPath=/data/dump
+</code></pre>
+<p>这只是初始配置，不是适用于所有服务的标准答案。最终要以 RSS、Native Memory、GC、流量和故障演练验证。</p>
+<h2>为什么 Heap 通常不占满容器内存</h2>
+<p>Heap 之外的内存同样计入 Cgroup Limit。典型额外消耗包括：</p>
+<ul>
+<li>每个线程的 Native Stack。</li>
+<li>Netty Direct Buffer。</li>
+<li>类元数据和压缩类空间。</li>
+<li>JIT Code Cache。</li>
+<li>GC Remembered Set、Mark Bitmap 等结构。</li>
+<li>APM、Profiler 和安全 Agent 的 Native 内存。</li>
+<li>JNI 和本地压缩库。</li>
+</ul>
+<p>如果 <code>Xmx</code> 设置为 Limit 的 90% 甚至 100%，流量峰值时即使 Heap 未满，也可能被容器直接 Kill。</p>
+<h2>Xms 和 Xmx 怎么设置</h2>
+<h3>设置相同的优势</h3>
+<ul>
+<li>避免运行期间动态扩堆造成额外波动。</li>
+<li>内存容量和 GC 行为更可预测。</li>
+<li>启动后即可确认节点是否拥有足够内存。</li>
+</ul>
+<h3>设置相同的代价</h3>
+<ul>
+<li>JVM 可能较早提交较多虚拟内存或物理页。</li>
+<li>低流量服务会长期保留不需要的容量。</li>
+<li>多实例共享机器时，弹性利用率下降。</li>
+</ul>
+<p>延迟敏感、固定资源的核心服务常设置 <code>Xms = Xmx</code>。弹性或低负载服务也可让 Xms 更小，但必须验证扩堆阶段的延迟和容器资源行为。</p>
+<h2>Heap 应该设置多大</h2>
+<p>Heap 至少要容纳：</p>
+<pre><code class="language-text">稳定存活对象
++ 业务缓存
++ 峰值在途请求对象
++ 一到多个 GC 周期内的新对象
++ 安全余量
+</code></pre>
+<p>不是 Heap 越大越好：</p>
+<ul>
+<li>更大的 Heap 增加容器成本。</li>
+<li>泄漏被发现得更晚。</li>
+<li>某些 GC 阶段处理对象和 Region 的工作量增加。</li>
+<li>Full GC 或 Heap Dump 的影响更大。</li>
+</ul>
+<p>Heap 太小则会造成高 GC 频率、过早晋升和分配失败。正确大小应让正常峰值下 GC 频率、暂停和回收比例处于稳定区间。</p>
+<h2>Young Generation 怎么配置</h2>
+<p>年轻代太小会频繁 Young GC，并让短命对象过早晋升；太大则单次扫描量和停顿可能增加，还会压缩老年代空间。</p>
+<p>使用 G1、ZGC 等现代收集器时，通常先让 JVM 根据停顿目标自适应，不要一开始固定新生代比例。只有从 GC 日志确认自适应结果不合适时，再谨慎调整。</p>
+<h2>Metaspace 怎么配置</h2>
+<p>Metaspace 保存类元数据，主要使用 Native Memory。普通应用的类数量相对稳定，可以设置合理上限防止 ClassLoader 泄漏吞噬整个容器。</p>
+<p>上限太小会在启动、动态代理或热路径生成类时 OOM；完全不设上限则泄漏可能扩张到容器极限。应观察应用稳定运行后的 Metaspace Used，并为动态加载和发布留余量。</p>
+<h2>Direct Memory 怎么配置</h2>
+<p>Netty、NIO、文件传输和压缩库可能大量使用 Direct Buffer。Direct Memory 减少某些 IO 拷贝，但释放依赖 Cleaner 和引用生命周期，错误使用可能造成堆外泄漏。</p>
+<p>网关、RPC 和消息服务的 Direct Memory 预算通常高于普通 CRUD 服务。需要监控 Buffer Pool、Netty Allocator 和进程 RSS，而不是只看 Heap。</p>
+<h2>线程栈怎么估算</h2>
+<p>线程栈总预算近似为：</p>
+<pre><code class="language-text">线程数量 × -Xss
+</code></pre>
+<p>300 个线程、每个 <code>-Xss1m</code>，理论上要为栈预留约 300MiB，再加线程本地结构和系统开销。若线程失控到 2000 个，内存和调度都会出现严重问题。</p>
+<p>减小 Xss 可以容纳更多线程，但递归深度和复杂调用链更容易 StackOverflow。优化重点通常是减少线程数量、使用有界线程池，而不是把栈压到极小。</p>
+<h2>Code Cache 和其他 Native 内存</h2>
+<p>JIT 编译后的机器码存放在 Code Cache。大型应用、动态代理和长期运行服务可能消耗较多。GC 自身、符号表、Arena、编译器线程和 JNI 也会使用 Native Memory。</p>
+<p>可以在受控环境使用 Native Memory Tracking 观察大类目：</p>
+<pre><code class="language-text">-XX:NativeMemoryTracking=summary
+</code></pre>
+<p>NMT 有一定性能开销，是否长期启用要通过压测决定。</p>
+<h2>容器环境的特别注意事项</h2>
+<p>现代 JDK 能识别 Cgroup 限制，但必须确认使用的 JDK 版本和容器支持。使用百分比参数时，例如 InitialRAMPercentage、MaxRAMPercentage，要清楚它基于 JVM 识别到的可用内存计算。</p>
+<p>不能只设置 MaxRAMPercentage 而忽略非堆预算。对于大量堆外内存的服务，即使 Heap 比例不高，RSS 仍可能接近 Limit。</p>
+<h2>Request 和 Limit 怎么配</h2>
+<p>在 Kubernetes 中：</p>
+<ul>
+<li>Request 用于调度和资源保障。</li>
+<li>Limit 是容器内存硬上限，超过可能 OOMKilled。</li>
+</ul>
+<p>核心服务的 Request 不应远低于稳定 RSS，否则节点可能过度调度。Limit 也不能仅比 <code>Xmx</code> 多几十 MB。应根据压测峰值 RSS 加安全余量，并确保节点在故障迁移时仍有资源。</p>
+<h2>物理机部署怎么配置</h2>
+<p>同一台机器运行多个 JVM 时，必须计算所有进程的最坏内存总和，并为操作系统 Page Cache、监控 Agent 和运维命令留空间。不要按平均值超卖核心服务内存。</p>
+<p>若数据库、ES 等依赖 Page Cache 的服务与 JVM 混部，JVM 占满内存会严重影响它们，应优先隔离部署。</p>
+<h2>GC 收集器怎么选择</h2>
+<h3>G1</h3>
+<p>适合多数服务端应用，以可预测停顿为目标。<code>MaxGCPauseMillis</code> 是软目标，设置过低可能让 GC 使用更多 CPU，并不保证每次停顿都满足。</p>
+<h3>ZGC</h3>
+<p>适合较大 Heap 和低停顿需求，绝大部分工作并发执行。需要使用合适 JDK 版本，并评估并发 GC 对吞吐和 CPU 余量的要求。</p>
+<h3>Parallel GC</h3>
+<p>强调吞吐，适合批处理或不敏感于单次停顿的任务。</p>
+<p>不要只因为“新”就更换收集器。选择应根据 Heap 大小、对象分配、吞吐和 P99 延迟压测。</p>
+<h2>如何根据 GC 日志调整</h2>
+<p>重点观察：</p>
+<ul>
+<li>对象分配速率。</li>
+<li>Young GC 频率和暂停。</li>
+<li>晋升速率。</li>
+<li>Full GC 次数。</li>
+<li>GC 前后 Old Gen 使用量。</li>
+<li>并发标记是否来得及完成。</li>
+<li>Humongous Object 数量。</li>
+</ul>
+<p>如果 Young GC 很频繁但回收效果好，可能年轻代偏小或分配速率过高；若老年代基线持续上涨，应先排查对象生命周期和泄漏，而不是调大 Heap。</p>
+<h2>大对象怎么影响配置</h2>
+<p>大 JSON、文件字节数组、大集合和超长字符串会造成瞬时分配峰值。G1 中超过特定 Region 比例的对象被视为 Humongous Object，可能增加碎片和回收压力。</p>
+<p>解决方向是流式处理、限制请求大小、分页和避免重复拷贝。仅增加 Region 或 Heap 不是首选。</p>
+<h2>实战配置流程</h2>
+<ol>
+<li>确定容器 Limit、业务吞吐和延迟目标。</li>
+<li>估算线程、Direct Memory、Metaspace 和 Agent 开销。</li>
+<li>从总内存扣除非堆预算与安全余量，得到 Heap 初始上限。</li>
+<li>选择收集器并尽量使用少量关键参数。</li>
+<li>用真实数据、峰值并发和下游变慢场景压测。</li>
+<li>分析 GC 日志、RSS、Native Memory 和业务 P99。</li>
+<li>调整后进行长稳测试，覆盖缓存填满和对象晋升。</li>
+<li>灰度上线，持续观察并建立配置基线。</li>
+</ol>
+<h2>为什么不能照搬固定比例</h2>
+<p>“Heap 配容器的 70%”只能作为某些普通服务的起点：</p>
+<ul>
+<li>Netty 网关需要更多 Direct Memory。</li>
+<li>线程很多的服务需要更多 Stack 空间。</li>
+<li>动态类多的服务需要更多 Metaspace。</li>
+<li>大 Heap 低延迟服务可能选择 ZGC 并保留更多 CPU。</li>
+<li>使用大量内存映射文件的服务 RSS 表现不同。</li>
+</ul>
+<p>配置必须来自应用画像，而不是一条统一口诀。</p>
+<h2>用一个例子串起来</h2>
+<blockquote>
+<p>我们的订单服务容器 Limit 是 8GiB，稳定线程约 250 个，使用 G1。压测发现 Heap 稳定存活对象约 2.8GiB，峰值在途对象约 700MiB，因此将 Xms/Xmx 设置为 5GiB；为线程栈预留约 300MiB，为 Metaspace 预留 512MiB，为 Direct Memory 预留 768MiB，其余留给 Code Cache、Agent、JVM Native 和峰值余量。这样设置是因为历史监控显示 RSS 峰值约 7GiB，在单实例承接 1.5 倍流量时没有 OOMKilled，Full GC 后 Old Gen 基线稳定。最终配置是压测结果，不是固定比例。</p>
+</blockquote>
+<p>真实回答应替换成项目实际内存、线程、GC 和验证数据。</p>
+<h2>容易踩坑的地方</h2>
+<ul>
+<li>容器 8GB 就设置 <code>-Xmx8g</code>。</li>
+<li>Heap 使用率低代表进程内存安全。</li>
+<li><code>Xms = Xmx</code> 在所有场景都最好。</li>
+<li>Heap 越大 GC 越少，所以越大越好。</li>
+<li>线程栈不计入容器内存。</li>
+<li>设置 Direct Memory 上限就不会发生堆外泄漏。</li>
+<li>只看平均内存，不做峰值和故障流量压测。</li>
+</ul>
+<h2>常见问题</h2>
+<h3>追问 1：8GB 容器 Xmx 应该设置多少？</h3>
+<p>不能只给固定数字。先估算 Metaspace、Direct Memory、线程栈、Code Cache、Agent 和安全余量，普通服务可能从 4.5～5.5GB Heap 起步压测，Netty 等堆外使用高的服务应更保守。</p>
+<h3>追问 2：为什么线上常设置 Xms 等于 Xmx？</h3>
+<p>避免运行期间动态扩堆，让容量和 GC 行为更可预测，适合固定资源、延迟敏感的核心服务。低负载弹性服务可以不同，但要验证扩堆影响。</p>
+<h3>追问 3：Heap 没满为什么容器被 OOMKilled？</h3>
+<p>容器限制统计整个进程 RSS，Direct Memory、线程栈、Metaspace、Code Cache、GC 结构和 Native Agent 都会占用内存。</p>
+<h3>追问 4：Xss 越小越好吗？</h3>
+<p>不是。减小栈可以降低多线程内存，却会缩短最大调用深度，增加 StackOverflow 风险。应先控制线程数，再通过实际调用链测试栈大小。</p>
+<h3>追问 5：如何判断 Heap 配小了？</h3>
+<p>正常峰值下 Young GC 过于频繁、对象过早晋升、并发标记来不及、Full GC 出现且回收后存活对象本身已接近上限。还要排除泄漏和无界流量。</p>
+<h3>追问 6：如何判断 Heap 配大了？</h3>
+<p>长期使用远低于上限、容器成本高、故障 Dump 和 Full GC 影响大，缩小后仍能满足 P99 与吞吐。需要用长稳压测验证，不能只看某一分钟使用率。</p>
+<h3>追问 7：MaxRAMPercentage 能替代 Xmx 吗？</h3>
+<p>它便于根据容器内存动态计算 Heap，但仍必须为非堆内存留预算，并确认 JDK 对 Cgroup 的识别。对于规格固定的核心服务，显式 Xmx 更易审计和预测。</p>

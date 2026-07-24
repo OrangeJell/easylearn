@@ -1,0 +1,72 @@
+<h2>先说结论</h2>
+<blockquote>
+<p>HashSet 基于 HashMap，平均增删查接近 O(1) 且不保证顺序；LinkedHashSet 额外维护链表，保留插入顺序；TreeSet 基于红黑树，元素按自然顺序或比较器排序，操作复杂度 O(log n)。</p>
+</blockquote>
+<p>HashSet 和 LinkedHashSet 主要通过 <code>hashCode</code> 定位、<code>equals</code> 判等；TreeSet 用 <code>compareTo</code> 或 <code>Comparator</code> 的结果是否为 0 判断重复。</p>
+<h2>选择原则</h2>
+<p>只要求去重时优先 HashSet；需要稳定输出插入顺序时选择 LinkedHashSet；需要有序遍历、范围查询或邻近元素查找时使用 TreeSet。</p>
+<h2>底层结构与复杂度</h2>
+<table>
+<thead>
+<tr>
+<th>实现</th>
+<th>底层结构</th>
+<th>contains/add/remove</th>
+<th>顺序</th>
+<th>额外成本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HashSet</td>
+<td>HashMap 的键</td>
+<td>平均 O(1)</td>
+<td>无契约</td>
+<td>桶数组与节点</td>
+</tr>
+<tr>
+<td>LinkedHashSet</td>
+<td>HashMap + 双向链表</td>
+<td>平均 O(1)</td>
+<td>插入顺序</td>
+<td>每节点额外前后指针</td>
+</tr>
+<tr>
+<td>TreeSet</td>
+<td>TreeMap 红黑树</td>
+<td>O(log n)</td>
+<td>比较器顺序</td>
+<td>树旋转和比较成本</td>
+</tr>
+</tbody></table>
+<p>HashSet 实际把元素存为 HashMap 的 key，value 使用共享占位对象。LinkedHashSet 通过维护访问链保证稳定迭代，因此比 HashSet 多占一些内存，但非常适合“去重且保留输入顺序”。</p>
+<h2>TreeSet 的导航能力</h2>
+<p>TreeSet 不只是排序输出，还实现 <code>NavigableSet</code>：</p>
+<pre><code class="language-java">NavigableSet&lt;Integer&gt; scores = new TreeSet&lt;&gt;(List.of(60, 75, 80, 90));
+scores.floor(78);       // 75，小于等于目标的最大值
+scores.ceiling(78);     // 80，大于等于目标的最小值
+scores.subSet(70, true, 90, false); // [75, 80]
+</code></pre>
+<p>排行榜分段、时间范围、规则阈值等需要邻近或区间操作时，这些能力比“放入 HashSet 后每次排序”更自然。</p>
+<h2>可变键为什么危险</h2>
+<pre><code class="language-java">Set&lt;User&gt; users = new HashSet&lt;&gt;();
+User user = new User(1L, &quot;old@example.com&quot;);
+users.add(user);
+user.setEmail(&quot;new@example.com&quot;); // 若 email 参与 equals/hashCode
+users.remove(user);               // 可能找不到原桶
+</code></pre>
+<p>TreeSet 也有类似问题：若对象加入后修改参与比较的字段，树的物理位置不会自动调整，集合顺序和查找都会失真。集合元素最好使用不可变唯一键，更新排序字段时先删除旧元素再重新加入。</p>
+<h2>去重规则是业务契约</h2>
+<p>按用户 ID 去重、按邮箱去重和按“姓名 + 生日”去重是不同业务含义。不要为了放入 Set 临时重写实体 equals；更明确的做法是构造去重键、使用 <code>Map&lt;Key, Value&gt;</code>，或给 TreeSet 传入局部 Comparator。</p>
+<h2>契约要求</h2>
+<p>放入 HashSet 的对象在集合生命周期内不应修改参与哈希的字段。TreeSet 的比较规则最好与 <code>equals</code> 一致，否则可能出现“equals 不同但集合认为重复”的现象。</p>
+<h2>容易踩坑的地方</h2>
+<p>HashSet 的遍历顺序即使在一次运行中看似稳定，也不是公开契约。TreeSet 不是依靠哈希，因此修复 <code>hashCode</code> 不会改变它的去重结果。</p>
+<h2>常见问题</h2>
+<h3>追问：三种 Set 如何处理 null？</h3>
+<p>HashSet 和 LinkedHashSet 通常允许一个 null；TreeSet 使用自然排序时通常不能比较 null，自定义比较器是否支持取决于比较规则。</p>
+<h3>追问：LinkedHashSet 如何实现稳定顺序？</h3>
+<p>除了哈希桶，它还把所有节点连接成双向链表；迭代沿链表进行。删除需要同时维护哈希结构和链表链接。</p>
+<h3>追问：如何对一批对象按 ID 去重并保留第一次出现？</h3>
+<p>用 LinkedHashMap 的 ID 作为键并 <code>putIfAbsent</code>，最后取 values；这比只用 Set 更容易同时保留原对象和明确去重字段。</p>
+<h3>追问：TreeSet 的 compare 返回 0 有什么后果？</h3>
+<p>集合认为新元素与已有元素是同一个键，<code>add</code> 返回 false，不会同时保存。比较器必须包含业务唯一性需要的全部字段。</p>

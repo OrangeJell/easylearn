@@ -1,0 +1,902 @@
+[
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "slug": "string-immutable",
+    "title": "String 为什么被 final 修饰且不可变？",
+    "description": "从 final、常量池、哈希缓存和线程安全理解 String",
+    "minutes": 4,
+    "level": "基础"
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "slug": "equals-hashcode",
+    "title": "==、equals 和 hashCode 的区别？",
+    "description": "对象相等性契约与集合中的实际影响",
+    "minutes": 3,
+    "level": "基础"
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "slug": "generics",
+    "title": "Java 泛型、类型擦除与通配符详解",
+    "description": "掌握泛型类、泛型方法、类型擦除以及 extends 和 super 的使用边界",
+    "minutes": 5,
+    "level": "进阶"
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "slug": "exception-handling",
+    "title": "Java 异常体系与最佳实践是什么？",
+    "description": "区分 Error、受检异常和运行时异常，并掌握异常设计与资源释放",
+    "minutes": 7,
+    "level": "基础"
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "slug": "reflection-annotations",
+    "title": "Java 反射和注解的原理与使用场景是什么？",
+    "description": "理解 Class 元数据、反射调用、注解保留策略及框架中的典型应用",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "slug": "serialization",
+    "title": "Java 序列化有哪些方式和风险？",
+    "description": "比较 JDK、JSON 和二进制序列化，并分析兼容性、安全性与选型原则",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "slug": "interface-abstract-class",
+    "title": "接口和抽象类有什么区别？",
+    "description": "从类型关系、状态复用、默认方法和演进能力选择接口或抽象类",
+    "minutes": 6,
+    "level": "基础"
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "slug": "overload-override",
+    "title": "方法重载和重写有什么区别？",
+    "description": "理解编译期重载选择、运行期动态绑定以及重写的类型约束",
+    "minutes": 6,
+    "level": "基础"
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "slug": "pass-by-value",
+    "title": "Java 到底是值传递还是引用传递？",
+    "description": "用基本类型、对象引用和重新赋值解释 Java 参数传递语义",
+    "minutes": 6,
+    "level": "基础"
+  },
+  {
+    "category": "Java基础",
+    "categorySlug": "java-basic",
+    "slug": "autoboxing-integer-cache",
+    "title": "自动装箱、拆箱和 Integer 缓存有哪些坑？",
+    "description": "理解包装类型转换、对象缓存、空指针和数值比较的正确方式",
+    "minutes": 6,
+    "level": "基础"
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "slug": "hashmap",
+    "title": "HashMap 的底层原理是什么？",
+    "description": "从哈希定位、冲突处理到扩容与并发边界",
+    "minutes": 4,
+    "level": "进阶"
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "slug": "arraylist-linkedlist",
+    "title": "ArrayList 与 LinkedList 应该怎么选？",
+    "description": "从数据结构、扩容、随机访问和真实插入成本比较两种 List",
+    "minutes": 4,
+    "level": "基础"
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "slug": "concurrenthashmap",
+    "title": "ConcurrentHashMap 如何保证线程安全？",
+    "description": "对比 JDK 7 与 JDK 8 的结构，理解并发读写、扩容和复合操作",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "slug": "set-comparison",
+    "title": "HashSet、LinkedHashSet 和 TreeSet 有什么区别？",
+    "description": "比较三种 Set 的去重依据、顺序、复杂度和适用场景",
+    "minutes": 6,
+    "level": "基础"
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "slug": "fail-fast-iterator",
+    "title": "fail-fast 和 fail-safe 迭代器有什么区别？",
+    "description": "理解结构修改检测、弱一致遍历以及并发修改异常的正确处理方式",
+    "minutes": 6,
+    "level": "基础"
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "slug": "copy-on-write-arraylist",
+    "title": "CopyOnWriteArrayList 适合什么场景？",
+    "description": "理解写时复制、快照迭代及其在读多写少场景下的收益与代价",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "slug": "queue-deque-priorityqueue",
+    "title": "Queue、Deque 和 PriorityQueue 应该怎么用？",
+    "description": "掌握队列与双端队列 API、堆结构及优先队列的复杂度和边界",
+    "minutes": 6,
+    "level": "基础"
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "slug": "concurrent-collections",
+    "title": "同步集合和并发集合有什么区别？",
+    "description": "比较同步包装器与并发容器的锁粒度、迭代语义和复合操作",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "slug": "comparable-comparator",
+    "title": "Comparable 和 Comparator 有什么区别？",
+    "description": "掌握自然顺序、外部比较策略、稳定排序和比较器契约",
+    "minutes": 6,
+    "level": "基础"
+  },
+  {
+    "category": "Java集合",
+    "categorySlug": "collections",
+    "slug": "immutable-collections",
+    "title": "不可变集合和只读集合有什么区别？",
+    "description": "区分不可修改视图、防御性复制与真正不可变的数据结构",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "slug": "thread-pool",
+    "title": "Java 线程池有几种创建方式？",
+    "description": "从 execute 流程、队列策略到生产配置",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "slug": "volatile-happens-before",
+    "title": "volatile 如何保证可见性和有序性？",
+    "description": "从 JMM、happens-before 和内存屏障理解 volatile",
+    "minutes": 4,
+    "level": "进阶"
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "slug": "locks-aqs",
+    "title": "synchronized、ReentrantLock 与 AQS 原理",
+    "description": "理解监视器锁、显式锁、可重入、公平性以及 AQS 同步队列",
+    "minutes": 4,
+    "level": "进阶"
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "slug": "thread-lifecycle-communication",
+    "title": "Java 线程有哪些状态？线程间如何通信？",
+    "description": "理解线程状态转换以及 wait、notify、join 和中断的协作方式",
+    "minutes": 8,
+    "level": "基础"
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "slug": "cas-aba",
+    "title": "CAS 的原理是什么？如何解决 ABA 问题？",
+    "description": "理解比较交换、原子类、自旋代价以及版本戳解决 ABA 的方式",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "slug": "threadlocal",
+    "title": "ThreadLocal 的原理和内存泄漏问题是什么？",
+    "description": "理解线程本地变量、弱引用键、线程池复用与上下文清理",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "slug": "completable-future",
+    "title": "CompletableFuture 如何实现异步任务编排？",
+    "description": "掌握异步转换、任务组合、异常处理和线程池隔离",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "slug": "deadlock",
+    "title": "如何定位和避免 Java 死锁？",
+    "description": "从死锁四条件、线程转储、固定加锁顺序和超时获取锁系统分析",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "slug": "java-memory-model",
+    "title": "Java 内存模型和 happens-before 规则是什么？",
+    "description": "从原子性、可见性、有序性和安全发布理解并发正确性",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "Java多线程",
+    "categorySlug": "concurrency",
+    "slug": "virtual-threads",
+    "title": "Java 虚拟线程适合解决什么问题？",
+    "description": "理解虚拟线程的轻量调度、阻塞式编程优势及固定线程和限流边界",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "slug": "runtime-data-area",
+    "title": "JVM 运行时数据区有哪些？",
+    "description": "线程私有区、共享区与常见内存异常",
+    "minutes": 3,
+    "level": "基础"
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "slug": "gc-guide",
+    "title": "JVM 垃圾回收算法与收集器选择",
+    "description": "从对象存活判定、分代回收到 G1 和 ZGC 的选择与排查",
+    "minutes": 5,
+    "level": "进阶"
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "slug": "production-oom-troubleshooting",
+    "title": "线上遇到 OOM 怎么排查和处理？",
+    "description": "通过缓存对象泄漏案例掌握 OOM 止损、Heap Dump 分析、根因修复和长期治理",
+    "minutes": 16,
+    "level": "高级"
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "slug": "production-memory-sizing",
+    "title": "线上 JVM 内存怎么配置？为什么这样配置？",
+    "description": "从容器总内存拆分 Heap、Metaspace、Direct Memory、线程栈和系统余量",
+    "minutes": 17,
+    "level": "高级"
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "slug": "class-loading",
+    "title": "JVM 类加载过程是什么？",
+    "description": "掌握加载、链接、初始化的时机以及类初始化的线程安全保证",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "slug": "classloader-delegation",
+    "title": "双亲委派模型是什么？为什么要打破它？",
+    "description": "理解类加载器层次、类型身份、委派收益和 SPI 等特殊场景",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "slug": "object-allocation",
+    "title": "Java 对象是如何创建和分配内存的？",
+    "description": "从类检查、堆分配、对象头、TLAB 和构造初始化理解对象创建",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "slug": "gc-tuning",
+    "title": "JVM GC 调优应该从哪里开始？",
+    "description": "以业务目标、GC 日志和运行指标驱动收集器与堆参数调优",
+    "minutes": 7,
+    "level": "高级"
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "slug": "stack-metaspace-errors",
+    "title": "StackOverflowError 和 Metaspace OOM 如何排查？",
+    "description": "区分栈溢出、元空间耗尽的典型原因、证据和治理方式",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "JVM",
+    "categorySlug": "jvm",
+    "slug": "jit-compiler",
+    "title": "JIT 编译器如何优化 Java 代码？",
+    "description": "理解解释执行、分层编译、热点探测、内联和逃逸分析",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "slug": "btree-index",
+    "title": "MySQL 为什么使用 B+Tree 索引？",
+    "description": "从磁盘 IO、树高和范围查询理解 InnoDB 索引",
+    "minutes": 4,
+    "level": "进阶"
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "slug": "transactions-mvcc",
+    "title": "MySQL 事务隔离级别与 MVCC 原理",
+    "description": "从 ACID、Read View、Undo Log 到当前读和间隙锁系统理解事务",
+    "minutes": 5,
+    "level": "进阶"
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "slug": "sql-execution-explain",
+    "title": "MySQL 一条 SQL 如何执行？EXPLAIN 怎么分析？",
+    "description": "从连接、解析、优化、执行到 EXPLAIN ANALYZE 系统定位慢 SQL",
+    "minutes": 9,
+    "level": "进阶"
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "slug": "locks-deadlock",
+    "title": "MySQL 锁机制、死锁与线上排查详解",
+    "description": "掌握记录锁、间隙锁、Next-Key Lock、意向锁以及死锁诊断",
+    "minutes": 8,
+    "level": "高级"
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "slug": "redo-undo-binlog",
+    "title": "Redo Log、Undo Log 与 Binlog 有什么区别？",
+    "description": "从事务恢复、MVCC、复制与两阶段提交理解 MySQL 三大日志",
+    "minutes": 8,
+    "level": "高级"
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "slug": "replication-high-availability",
+    "title": "MySQL 主从复制、延迟与高可用设计",
+    "description": "从 Binlog 传输、并行回放、读写一致性到故障切换完整理解复制",
+    "minutes": 8,
+    "level": "高级"
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "slug": "slow-sql-troubleshooting",
+    "title": "线上遇到慢 SQL 应该怎么处理？",
+    "description": "从发现、止损、定位、优化到复盘，掌握慢 SQL 线上处理完整 SOP",
+    "minutes": 13,
+    "level": "高级"
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "slug": "table-design-guide",
+    "title": "MySQL 数据库表应该怎么设计？",
+    "description": "从业务建模、字段类型、主键、索引到分表与在线变更系统设计表结构",
+    "minutes": 19,
+    "level": "高级"
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "slug": "deep-pagination",
+    "title": "MySQL 深分页为什么慢？如何优化？",
+    "description": "从 OFFSET 扫描、回表成本和游标分页设计高性能翻页查询",
+    "minutes": 8,
+    "level": "进阶"
+  },
+  {
+    "category": "MySQL",
+    "categorySlug": "mysql",
+    "slug": "sharding",
+    "title": "MySQL 什么时候需要分库分表？怎么设计？",
+    "description": "从容量瓶颈、分片键、路由、扩容和跨分片查询设计分库分表方案",
+    "minutes": 8,
+    "level": "高级"
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "slug": "data-structures-use-cases",
+    "title": "Redis 有哪些数据结构？分别适合什么场景？",
+    "description": "从底层编码、复杂度和典型业务理解 String、Hash、List、Set、ZSet 与高级结构",
+    "minutes": 14,
+    "level": "进阶"
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "slug": "persistence-high-availability",
+    "title": "Redis 持久化和高可用是怎么实现的？",
+    "description": "掌握 RDB、AOF、主从复制、哨兵和 Cluster 的可靠性与故障切换",
+    "minutes": 15,
+    "level": "高级"
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "slug": "distributed-lock",
+    "title": "Redis 分布式锁应该怎么正确实现？",
+    "description": "从 SET NX PX、唯一锁值、Lua 解锁、续期到 Fencing Token 理解锁的边界",
+    "minutes": 14,
+    "level": "高级"
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "slug": "cache-problems",
+    "title": "Redis 缓存穿透、击穿和雪崩怎么解决？",
+    "description": "区分三类缓存故障的流量形态，并设计空值、互斥、随机过期和限流方案",
+    "minutes": 8,
+    "level": "进阶"
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "slug": "expiration-eviction",
+    "title": "Redis 过期删除和内存淘汰策略是什么？",
+    "description": "理解惰性删除、定期删除、maxmemory 策略以及 TTL 设计",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "slug": "cache-consistency",
+    "title": "Redis 缓存与数据库一致性怎么保证？",
+    "description": "比较更新缓存、删除缓存、延迟双删和变更订阅的一致性边界",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "slug": "hot-key-big-key",
+    "title": "Redis 热 Key 和大 Key 如何发现与治理？",
+    "description": "从流量倾斜、内存结构、扫描工具和拆分策略治理热点与大对象",
+    "minutes": 7,
+    "level": "高级"
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "slug": "cluster-sharding",
+    "title": "Redis Cluster 的分片和故障转移原理是什么？",
+    "description": "理解哈希槽、请求重定向、主从复制、故障选举和扩缩容",
+    "minutes": 7,
+    "level": "高级"
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "slug": "why-fast",
+    "title": "Redis 为什么快？单线程模型如何理解？",
+    "description": "从内存访问、事件循环、数据结构和 I/O 多线程解释 Redis 性能",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "Redis",
+    "categorySlug": "redis",
+    "slug": "transactions-lua-pipeline",
+    "title": "Redis 事务、Lua 和 Pipeline 有什么区别？",
+    "description": "比较批量发送、命令排队、乐观锁和服务端原子脚本的语义",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "slug": "mergetree",
+    "title": "ClickHouse MergeTree 引擎原理是什么？",
+    "description": "理解分区、排序键、数据片段与后台合并",
+    "minutes": 4,
+    "level": "进阶"
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "slug": "query-optimization",
+    "title": "ClickHouse 查询优化实战指南",
+    "description": "从建表设计、数据裁剪、物化视图到查询日志定位性能瓶颈",
+    "minutes": 5,
+    "level": "进阶"
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "slug": "advantages-limitations",
+    "title": "ClickHouse 有哪些优势和不足？",
+    "description": "从列式存储、向量化执行、实时分析到事务与高并发限制全面评估 ClickHouse",
+    "minutes": 11,
+    "level": "进阶"
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "slug": "production-optimization",
+    "title": "ClickHouse 在项目中做过哪些优化？",
+    "description": "从建模、写入、查询、Merge、集群和监控回答 ClickHouse 项目优化经验",
+    "minutes": 12,
+    "level": "高级"
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "slug": "concurrency-limitations",
+    "title": "ClickHouse 为什么对高并发支持不足？",
+    "description": "从 OLAP 执行模型、线程、内存、IO 与后台合并解释 ClickHouse 并发边界",
+    "minutes": 12,
+    "level": "高级"
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "slug": "replacing-mergetree",
+    "title": "ReplacingMergeTree 如何实现去重？",
+    "description": "理解后台合并去重、版本列、FINAL 查询及最终一致边界",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "slug": "partition-order-primary-key",
+    "title": "ClickHouse 分区键、排序键和主键有什么区别？",
+    "description": "区分数据片段管理、物理排序和稀疏索引三类建模能力",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "slug": "data-skipping-index",
+    "title": "ClickHouse 跳数索引有什么作用？",
+    "description": "理解 minmax、set、Bloom Filter 等索引的裁剪原理和适用数据分布",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "slug": "distributed-table",
+    "title": "ClickHouse Distributed 表如何分片和查询？",
+    "description": "理解本地表、分布式路由、分片键、副本选择和跨分片聚合",
+    "minutes": 6,
+    "level": "高级"
+  },
+  {
+    "category": "CK",
+    "categorySlug": "clickhouse",
+    "slug": "write-optimization",
+    "title": "ClickHouse 写入为什么要批量？如何优化？",
+    "description": "从数据片段、后台合并、批量大小和异步写入治理写入吞吐",
+    "minutes": 7,
+    "level": "高级"
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "slug": "consumer-group",
+    "title": "Kafka 消费者组与分区如何协作？",
+    "description": "理解分区分配、消费位点、再均衡和重复消费",
+    "minutes": 3,
+    "level": "进阶"
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "slug": "reliability",
+    "title": "Kafka 如何实现端到端可靠投递？",
+    "description": "串联生产、Broker、消费与数据库，设计可恢复的端到端投递链路",
+    "minutes": 5,
+    "level": "进阶"
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "slug": "message-loss-prevention",
+    "title": "Kafka 怎么保证消息不丢失？",
+    "description": "从生产者确认、副本同步、消费位点和故障演练建立端到端消息可靠性",
+    "minutes": 12,
+    "level": "高级"
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "slug": "duplicate-consumption-idempotency",
+    "title": "Kafka 怎么保证不重复消费？",
+    "description": "理解重复消费来源，并使用唯一约束、状态机和幂等键保证业务结果只生效一次",
+    "minutes": 11,
+    "level": "高级"
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "slug": "message-backlog-troubleshooting",
+    "title": "Kafka 消息堆积时应该怎么处理？",
+    "description": "从紧急止损、Lag 定位、并行扩容到数据恢复系统处理 Kafka 消息积压",
+    "minutes": 13,
+    "level": "高级"
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "slug": "isr-leader-election",
+    "title": "Kafka ISR 和 Leader 选举机制是什么？",
+    "description": "理解副本同步集合、确认条件、故障选举和可用性与可靠性的权衡",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "slug": "message-ordering",
+    "title": "Kafka 如何保证消息顺序？",
+    "description": "从分区有序、消息 Key、生产者重试和消费者并发设计局部顺序",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "slug": "transactions-exactly-once",
+    "title": "Kafka 事务和 Exactly-Once 语义如何实现？",
+    "description": "理解幂等生产者、事务写入、隔离级别及端到端恰好一次的边界",
+    "minutes": 6,
+    "level": "高级"
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "slug": "zero-copy",
+    "title": "Kafka 的零拷贝和顺序写为什么快？",
+    "description": "从追加日志、页缓存、批处理和 sendfile 理解 Kafka 高吞吐",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "Kafka",
+    "categorySlug": "kafka",
+    "slug": "partition-planning",
+    "title": "Kafka 分区数应该如何规划和扩容？",
+    "description": "根据吞吐、消费并行度、顺序要求和 Broker 资源规划分区",
+    "minutes": 7,
+    "level": "高级"
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "slug": "inverted-index",
+    "title": "Elasticsearch 倒排索引原理是什么？",
+    "description": "从分词、词项字典和文档列表理解全文检索",
+    "minutes": 3,
+    "level": "进阶"
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "slug": "mapping-query",
+    "title": "Elasticsearch Mapping、分词与查询选择",
+    "description": "掌握 text 和 keyword、动态映射、全文查询与精确查询的设计方法",
+    "minutes": 5,
+    "level": "进阶"
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "slug": "performance-troubleshooting",
+    "title": "Elasticsearch 会遇到哪些性能问题？如何优化？",
+    "description": "从慢查询、写入抖动、分片、堆内存和集群负载系统排查 Elasticsearch 性能问题",
+    "minutes": 21,
+    "level": "高级"
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "slug": "shard-replica",
+    "title": "Elasticsearch 分片和副本应该如何设计？",
+    "description": "从容量、并行度、故障恢复和堆开销规划主分片与副本",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "slug": "cluster-election",
+    "title": "Elasticsearch 集群选主和脑裂如何处理？",
+    "description": "理解 master-eligible 节点、多数派决策、集群状态发布和故障恢复",
+    "minutes": 6,
+    "level": "高级"
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "slug": "write-search-process",
+    "title": "Elasticsearch 写入和搜索流程是什么？",
+    "description": "串联协调节点、主分片、副本、scatter-gather 和相关性排序",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "slug": "deep-pagination",
+    "title": "Elasticsearch 深分页有哪些解决方案？",
+    "description": "比较 from-size、search_after、PIT、scroll 的成本和适用场景",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "slug": "near-real-time",
+    "title": "Elasticsearch 为什么是近实时搜索？",
+    "description": "理解 refresh、flush、translog 和 segment merge 的不同职责",
+    "minutes": 6,
+    "level": "进阶"
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "slug": "data-consistency",
+    "title": "Elasticsearch 如何处理并发更新和数据一致性？",
+    "description": "理解乐观并发控制、版本冲突、主副本复制及数据库同步方案",
+    "minutes": 6,
+    "level": "高级"
+  },
+  {
+    "category": "ES",
+    "categorySlug": "elasticsearch",
+    "slug": "index-lifecycle",
+    "title": "Elasticsearch 索引生命周期和冷热分层怎么设计？",
+    "description": "使用 rollover、ILM、数据层级和快照管理时间序列数据成本",
+    "minutes": 6,
+    "level": "高级"
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "slug": "cache-consistency",
+    "title": "缓存与数据库一致性如何保证？",
+    "description": "从 Cache Aside、延迟双删和消息通知理解一致性取舍",
+    "minutes": 4,
+    "level": "高级"
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "slug": "idempotency",
+    "title": "分布式系统如何设计幂等接口？",
+    "description": "从重复请求来源、唯一键、状态机和幂等令牌设计可靠接口",
+    "minutes": 5,
+    "level": "高级"
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "slug": "flash-sale-system-design",
+    "title": "如何设计一个高并发秒杀系统？",
+    "description": "从流量削峰、库存预扣、异步下单、防超卖和容灾完整设计秒杀系统",
+    "minutes": 18,
+    "level": "高级"
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "slug": "config-distribution-gray-release",
+    "title": "如何设计支持灰度的线上配置分发系统？",
+    "description": "设计及时推送、版本一致、部分服务灰度、确认回执和快速回滚的配置中心",
+    "minutes": 22,
+    "level": "高级"
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "slug": "distributed-transaction",
+    "title": "分布式事务有哪些解决方案？",
+    "description": "比较 2PC、TCC、Saga 和可靠消息的适用边界与工程成本",
+    "minutes": 7,
+    "level": "高级"
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "slug": "rate-limiting",
+    "title": "高并发系统如何设计限流？",
+    "description": "比较固定窗口、滑动窗口、漏桶和令牌桶并设计多层限流",
+    "minutes": 7,
+    "level": "高级"
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "slug": "resilience",
+    "title": "熔断、降级、超时和重试应该如何配合？",
+    "description": "通过调用预算、退避重试、熔断状态机和降级策略防止级联故障",
+    "minutes": 7,
+    "level": "高级"
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "slug": "distributed-id",
+    "title": "分布式唯一 ID 有哪些生成方案？",
+    "description": "比较 UUID、数据库号段、Redis 自增和雪花算法的顺序性与可用性",
+    "minutes": 7,
+    "level": "进阶"
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "slug": "delayed-task",
+    "title": "延时任务系统应该如何设计？",
+    "description": "比较定时扫描、延迟队列和时间轮，并处理可靠投递、幂等与取消",
+    "minutes": 7,
+    "level": "高级"
+  },
+  {
+    "category": "架构",
+    "categorySlug": "architecture",
+    "slug": "observability",
+    "title": "分布式系统的可观测性应该如何设计？",
+    "description": "用指标、日志、链路和业务事件建立从发现到定位再到验证的闭环",
+    "minutes": 7,
+    "level": "高级"
+  }
+]

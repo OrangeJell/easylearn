@@ -1,0 +1,45 @@
+<h2>先说结论</h2>
+<p>ClickHouse 擅长扫描和聚合海量列式数据。优化重点不是让每条语句都“走索引”，而是尽量少读分区、少读数据块、少读列，并减少高基数聚合和不必要的数据交换。</p>
+<h2>建表阶段决定上限</h2>
+<p><code>PARTITION BY</code> 用于数据生命周期管理和粗粒度裁剪，不应使用高基数字段制造海量小分区。<code>ORDER BY</code> 决定数据在磁盘上的排序方式，是查询跳过数据的关键，应优先放常用过滤条件，并兼顾基数和查询模式。</p>
+<pre><code class="language-sql">CREATE TABLE events
+(
+    event_date Date,
+    tenant_id UInt32,
+    event_type LowCardinality(String),
+    user_id UInt64,
+    payload String
+)
+ENGINE = MergeTree
+PARTITION BY toYYYYMM(event_date)
+ORDER BY (tenant_id, event_date, event_type);
+</code></pre>
+<p>分区键和排序键职责不同；排序键也不等同于传统数据库的唯一主键。</p>
+<h2>只读取需要的数据</h2>
+<ul>
+<li>避免 <code>SELECT *</code>，列式存储读取无关列仍会产生 IO 和解压成本。</li>
+<li>尽早增加可裁剪的过滤条件。</li>
+<li>时间范围使用与字段类型一致的表达式，避免阻碍裁剪。</li>
+<li>大结果集不要直接返回客户端，先聚合或分页导出。</li>
+</ul>
+<p><code>PREWHERE</code> 可以先读取过滤列，命中后再读取其余列。ClickHouse 通常会自动优化，但理解它有助于分析实际读取量。</p>
+<h2>数据类型与编码</h2>
+<p>选择满足范围的最小数值类型；枚举值或重复字符串可以评估 <code>LowCardinality</code>；时间字段使用 <code>Date</code> 或 <code>DateTime</code>，不要全部保存为字符串。合理类型能够降低磁盘占用、内存和 CPU 解码成本。</p>
+<h2>聚合与物化</h2>
+<p>重复执行的固定口径聚合可以通过物化视图在写入阶段预计算，把查询成本转移到写入。它适合稳定指标，不适合维度频繁变化的临时分析。使用前需要规划历史数据回填、幂等以及源表变更。</p>
+<h2>定位慢查询</h2>
+<p>通过 <code>system.query_log</code> 关注 <code>read_rows</code>、<code>read_bytes</code>、执行时间和内存使用量。若返回几百行却读取数十亿行，优先检查分区与排序键是否匹配查询。</p>
+<p><code>EXPLAIN indexes = 1</code> 可以观察分区、主键等裁剪效果。优化后要比较实际读取行数和字节数，而不仅是单次耗时，因为缓存和并发负载会干扰耗时。</p>
+<h2>常见反模式</h2>
+<ol>
+<li>每条数据单独插入，产生大量小 Part；应批量写入。</li>
+<li>把高基数 UUID 直接设为首个排序键，却很少按它过滤。</li>
+<li>使用海量小分区，把分区当作二级索引。</li>
+<li>在大表之间无约束 JOIN；应过滤、预聚合并选择合理 JOIN 策略。</li>
+<li>依赖 <code>FINAL</code> 修正所有查询，它可能带来显著额外开销。</li>
+</ol>
+<h2>常见问题</h2>
+<h3>追问：为什么分区不能越细越好？</h3>
+<p>过多分区会增加元数据、小 Part 和文件系统管理成本。分区首先服务数据生命周期管理，查询加速更多依赖排序键与跳数索引。</p>
+<h3>追问：什么时候使用物化视图？</h3>
+<p>适合口径稳定、频繁重复的聚合，把计算移到写入阶段；维度频繁变化的临时分析不适合，且需设计历史回填与幂等。</p>

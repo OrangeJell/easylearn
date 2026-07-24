@@ -1,0 +1,120 @@
+<h2>先说结论</h2>
+<p>一条 SQL 会经过连接、解析、优化和执行。分析 EXPLAIN 时，重点看实际访问了多少数据、用了什么索引、连接顺序是否合理，而不是只盯着某一个字段背结论。</p>
+<h2>一条查询的完整链路</h2>
+<p>客户端先通过连接器建立会话，完成认证并获得权限。连接建立后，会话拥有独立的事务状态、字符集、系统变量和临时表等上下文。生产中应通过连接池复用连接，但连接池上限不能超过数据库实际承载能力。</p>
+<p>SQL 进入 Server 层后，解析器完成词法和语法分析，构建内部语法结构。随后预处理阶段解析表和列、检查歧义与权限。优化器依据统计信息、索引、连接顺序和成本模型生成执行计划，执行器再调用 InnoDB 等存储引擎接口读取或修改数据。</p>
+<pre><code class="language-text">客户端
+  ↓
+连接与会话管理
+  ↓
+解析 / 预处理
+  ↓
+查询优化器
+  ↓
+执行器
+  ↓
+InnoDB 存储引擎
+</code></pre>
+<p>MySQL 8.0 已移除旧版查询缓存。应用层缓存仍然存在，但不要在回答执行流程时继续把 Query Cache 当作现代 MySQL 的标准步骤。</p>
+<h2>优化器为什么可能选错索引</h2>
+<p>优化器依赖统计信息估算不同路径的成本，包括预计扫描行数、随机 IO、回表成本、排序和临时表成本。当统计信息过期、列分布严重倾斜、多个条件高度相关或参数值差异巨大时，估算可能偏离实际。</p>
+<p>索引不是越多越好。若条件命中表中大部分行，走二级索引后逐条回表可能比顺序扫描更贵。优化器不使用某个索引，不等于索引“失效”，应先比较成本与实际数据分布。</p>
+<h2>EXPLAIN 关键字段</h2>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>关注重点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>table</code></td>
+<td>当前访问的表或派生结果</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>大致访问方式，例如 const、ref、range、index、ALL</td>
+</tr>
+<tr>
+<td><code>possible_keys</code></td>
+<td>语法上可能使用的索引</td>
+</tr>
+<tr>
+<td><code>key</code></td>
+<td>实际选择的索引</td>
+</tr>
+<tr>
+<td><code>key_len</code></td>
+<td>实际使用的索引键长度，可辅助判断联合索引使用范围</td>
+</tr>
+<tr>
+<td><code>ref</code></td>
+<td>索引查找与哪个常量或列比较</td>
+</tr>
+<tr>
+<td><code>rows</code></td>
+<td>优化器估算需要检查的行数</td>
+</tr>
+<tr>
+<td><code>filtered</code></td>
+<td>经过表级条件后预计保留比例</td>
+</tr>
+<tr>
+<td><code>Extra</code></td>
+<td>覆盖索引、索引下推、排序、临时表等额外信息</td>
+</tr>
+</tbody></table>
+<p><code>type</code> 从 <code>const</code> 到 <code>ALL</code> 通常代表访问范围逐渐扩大，但不能只根据它给 SQL 判死刑。小表全表扫描完全合理；某些 range 查询读取大量数据仍然可能很慢。</p>
+<h2>Extra 常见信息</h2>
+<ul>
+<li><code>Using index</code>：查询列可以从索引获得，通常表示覆盖索引。</li>
+<li><code>Using index condition</code>：使用索引条件下推，在存储引擎层过滤，减少回表。</li>
+<li><code>Using where</code>：Server 层仍需应用过滤条件，并不天然代表坏计划。</li>
+<li><code>Using filesort</code>：需要额外排序，不一定真的使用磁盘文件；数据量小时可能在内存完成。</li>
+<li><code>Using temporary</code>：需要内部临时表，常见于复杂分组、去重或排序。</li>
+</ul>
+<h2>EXPLAIN ANALYZE 的价值</h2>
+<p>普通 EXPLAIN 展示估算计划，<code>EXPLAIN ANALYZE</code> 会真正执行语句并展示每个算子的实际耗时、实际行数与循环次数。对写语句或高成本查询使用前必须评估风险，建议先在测试环境或只读副本验证。</p>
+<pre><code class="language-sql">EXPLAIN ANALYZE
+SELECT id, created_at
+FROM orders
+WHERE tenant_id = 1001
+  AND created_at &gt;= &#39;2026-07-01&#39;
+ORDER BY created_at DESC
+LIMIT 50;
+</code></pre>
+<p>如果预计读取 10 行、实际读取 100 万行，说明统计信息或数据相关性有问题。若某算子循环次数异常高，可能是连接顺序或嵌套循环导致成本被放大。</p>
+<h2>慢 SQL 排查流程</h2>
+<ol>
+<li>从慢查询日志、APM 或数据库监控确认 SQL 指纹、耗时分位数、调用次数和影响范围。</li>
+<li>保存真实参数与表结构，避免只拿脱敏后的空参数 SQL 分析。</li>
+<li>查看执行计划、实际行数、锁等待、扫描行数和返回行数。</li>
+<li>判断瓶颈是访问路径、回表、排序、临时表、锁等待还是网络返回量。</li>
+<li>调整索引、SQL、数据模型或分页方式，并在接近生产的数据量上验证。</li>
+<li>对比优化前后耗时、扫描行数、CPU、IO 和写入成本，防止只优化单条查询却拖慢全局写入。</li>
+</ol>
+<h2>常见优化案例</h2>
+<h3>深分页</h3>
+<p><code>LIMIT 1000000, 20</code> 需要扫描并丢弃大量记录。若存在稳定排序键，可以使用游标式翻页：</p>
+<pre><code class="language-sql">SELECT id, created_at
+FROM orders
+WHERE tenant_id = ?
+  AND (created_at, id) &lt; (?, ?)
+ORDER BY created_at DESC, id DESC
+LIMIT 20;
+</code></pre>
+<h3>避免无意义回表</h3>
+<p>只返回列表页需要的列，利用 <code>(tenant_id, status, created_at, id)</code> 等覆盖索引；不要为了方便直接 <code>SELECT *</code>。但联合索引也不能无限加列，要衡量空间与写放大。</p>
+<h3>大批量修改</h3>
+<p>一次更新数百万行会制造大事务、长锁持有和大量日志。可以按主键范围分批执行，控制每批大小与间隔，并监控复制延迟和 Undo 堆积。</p>
+<h2>常见问题</h2>
+<h3>追问 1：possible_keys 有索引但 key 为 NULL，为什么？</h3>
+<p>优化器认为全表扫描或其他路径成本更低，可能因为返回比例高、表很小、统计信息偏差或索引回表成本过大。应看真实数据分布与执行计划，不能直接强制索引。</p>
+<h3>追问 2：Using filesort 一定走磁盘吗？</h3>
+<p>不一定。它表示无法直接利用索引顺序完成排序，额外排序可能在内存，也可能在数据量较大时使用临时文件。</p>
+<h3>追问 3：为什么函数会影响索引使用？</h3>
+<p>普通索引保存原列值的有序结构，对列做函数计算后，条件未必能转成原值范围。可改写为等价范围条件，或在合适版本使用生成列、函数索引。</p>
+<h3>追问 4：优化 SQL 为什么不能只看平均耗时？</h3>
+<p>平均值会掩盖长尾。数据库请求更应关注 P95/P99、扫描行数、锁等待和调用频率。一条 5ms 但每秒执行十万次的 SQL 也可能是主要负载。</p>
+<h3>追问 5：强制索引是否推荐？</h3>
+<p>只应作为充分验证后的临时或特定方案。数据分布变化后，固定计划可能反而更差。优先修复统计、索引设计或 SQL 表达，并持续监控。</p>

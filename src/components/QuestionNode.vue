@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import{computed,ref}from'vue'
-import{articleByRef,articlePath,type Article}from'../catalog'
+import{articleByRef,articlePath,type ArticleLink}from'../article-links'
 import type{PracticeQuestion}from'../data/practice'
 
 const props=withDefaults(defineProps<{question:PracticeQuestion;depth?:number;index?:number}>(),{depth:0,index:0})
 const answerVisible=ref(false)
-const related=computed(()=>props.question.relatedArticles.map(articleByRef).filter((item):item is Article=>Boolean(item)))
+const related=computed(()=>props.question.relatedArticles.map(articleByRef).filter((item):item is ArticleLink=>Boolean(item)))
 
 function sampleFollowUps(items:PracticeQuestion[]=[]){
   if(items.length<=1)return items
@@ -41,7 +41,7 @@ function toggleAnswer(){answerVisible.value=!answerVisible.value}
 
     <Transition name="answer-reveal">
       <div v-if="answerVisible" class="question-reveal-content">
-        <section class="spoken-answer" aria-live="polite">
+        <section class="spoken-answer" :class="{compact:(question.durationMinutes||0)<=1}" aria-live="polite">
           <div class="answer-heading"><span>参考回答</span><small>约 {{question.durationMinutes||2}} 分钟 · 口语表达</small></div>
           <section v-if="question.shortAnswer" class="quick-answer"><small>先说结论</small><p>{{question.shortAnswer}}</p></section>
           <div class="answer-copy" :class="{long:(question.durationMinutes||0)>=3}">
@@ -50,8 +50,8 @@ function toggleAnswer(){answerVisible.value=!answerVisible.value}
               <p>{{paragraph}}</p>
             </div>
           </div>
-          <div class="answer-points">
-            <b>回答抓手</b>
+          <div v-if="question.keyPoints.length" class="answer-points">
+            <b>记住这几点</b>
             <ol><li v-for="point in question.keyPoints" :key="point">{{point}}</li></ol>
           </div>
         </section>
@@ -61,15 +61,15 @@ function toggleAnswer(){answerVisible.value=!answerVisible.value}
           <div class="diagram-track"><template v-for="(node,nodeIndex) in question.diagram.nodes" :key="node"><div class="diagram-node"><i>{{String(nodeIndex+1).padStart(2,'0')}}</i><b>{{node}}</b></div><span v-if="nodeIndex<question.diagram.nodes.length-1">→</span></template></div>
         </section>
 
-        <nav v-if="related.length" class="question-related" aria-label="相关知识点">
-          <span>关联知识</span>
-          <RouterLink v-for="item in related" :key="item.file" :to="articlePath(item)"><b>{{item.title}}</b><i>↗</i></RouterLink>
-        </nav>
-
         <section v-if="visibleFollowUps.length" class="follow-up-list">
           <header><span>继续追问</span><small>{{visibleFollowUps.length}} 个问题</small></header>
           <QuestionNode v-for="(followUp,followIndex) in visibleFollowUps" :key="followUp.id" :question="followUp" :depth="depth+1" :index="followIndex"/>
         </section>
+
+        <nav v-if="related.length" class="question-related" aria-label="相关知识点">
+          <span>关联知识</span>
+          <RouterLink v-for="item in related" :key="item.file" :to="articlePath(item)"><b>{{item.title}}</b><i>↗</i></RouterLink>
+        </nav>
       </div>
     </Transition>
   </article>

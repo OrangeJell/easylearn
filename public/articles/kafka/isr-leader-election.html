@@ -1,0 +1,44 @@
+<h2>先说结论</h2>
+<blockquote>
+<p>每个分区由 Leader 处理读写，Follower 拉取并复制日志。AR 是所有副本，ISR 是当前与 Leader 保持足够同步的副本集合。Leader 故障后，控制器优先从 ISR 选举新 Leader，以降低已确认消息丢失风险。</p>
+</blockquote>
+<p>生产者使用 <code>acks=all</code> 时，Leader 需满足最小同步副本条件才接受写入；ISR 数量不足会让写入失败，以牺牲可用性保护可靠性。</p>
+<h2>副本同步</h2>
+<p>Follower 持续拉取 Leader 日志，落后超过阈值会被移出 ISR，追上后可重新加入。高水位限制消费者读取范围，避免读到尚未达到复制条件、故障后可能消失的数据。</p>
+<h2>分区复制的关键位置</h2>
+<p>每个副本都有自己的日志末端位置，Leader 维护 LEO、ISR 等状态，并推进 High Watermark。可把它理解为“已被足够副本确认、消费者可稳定读取的边界”。生产者获得 acks=all 的确认与消费者可见范围都与副本同步状态相关，但具体实现细节会随版本变化。这里抓住“主写、副拉、高水位防止读到不稳定数据”就够了。</p>
+<pre><code class="language-text">Producer -&gt; Leader append (LEO 前进)
+                ↓
+       Followers fetch and append
+                ↓
+      ISR 满足条件 -&gt; 确认生产者、推进可读边界
+</code></pre>
+<p>Follower 不是 Leader 主动推送，而是由 Follower 拉取。这使副本可以按自身速度追赶，也便于流控；如果磁盘、网络、GC 或 broker 负载导致落后超过阈值，就会暂时离开 ISR。</p>
+<h2>可靠性配置需要组合看</h2>
+<pre><code class="language-properties">acks=all
+enable.idempotence=true
+retries=2147483647
+min.insync.replicas=2
+replication.factor=3
+unclean.leader.election.enable=false
+</code></pre>
+<p>这是常见高可靠思路，不是可直接照抄的万能配置。若 ISR 小于 min.insync.replicas，acks=all 写入会失败，应用必须能感知、告警、退避或降级；若业务宁愿少量丢数据也要持续可写，取舍会不同，必须由 RPO/RTO 决定。</p>
+<h2>Leader 故障场景</h2>
+<p>Leader 宕机后，控制器在存活 ISR 中选新 Leader。若允许非 ISR 副本成为 Leader，新 Leader 可能缺少旧 Leader 已写但未复制的数据，日志会发生截断或覆盖；这提高可用性，却以数据丢失为代价。不同故障域部署副本、监控 ISR 收缩和禁止不安全选举，是防止单机故障演变成数据事故的基础。</p>
+<h2>ISR 频繁伸缩如何排查</h2>
+<p>先查看落后副本的磁盘延迟、网络、CPU、GC 暂停、page cache 压力、replica fetch 带宽和是否有大规模重分配。仅增加 ISR 超时阈值可能掩盖问题并延迟故障发现；仅增加副本数会提升复制压力。修复目标是让副本稳定追上，而不是让监控暂时不报警。</p>
+<h2>副本与消费者读</h2>
+<p>副本主要服务容灾和部分查询能力，消费者通常从 Leader 读取以保持简单一致的分区顺序。无论读哪一侧，业务端到端可靠性仍需处理生产重试、位点提交和下游幂等，ISR 只解决 Kafka 存储层的一部分问题。</p>
+<h2>故障与恢复</h2>
+<p>监控 ISR 收缩、Under Replicated Partitions、离线分区和选举频率。机架感知让副本跨故障域分布；恢复节点上线后要关注复制流量对磁盘与网络的冲击。</p>
+<h2>容易踩坑的地方</h2>
+<p>副本数为 3 不代表每条消息已写入 3 个副本，确认语义取决于 ISR 和配置。不安全 Leader 选举允许非 ISR 副本接管，能缩短不可用但可能丢失已确认数据。</p>
+<h2>常见问题</h2>
+<h3>追问：ISR 是固定集合吗？</h3>
+<p>不是，它随副本追赶状态动态变化。频繁伸缩往往意味着 Broker 负载、磁盘、网络或 GC 存在问题。</p>
+<h3>追问：副本数 3、min.insync.replicas 2 能容忍什么？</h3>
+<p>在所有副本初始健康且 acks=all 时，通常可容忍一个副本不可用仍继续满足两份同步确认；若再坏一个，写入会按配置失败以保护可靠性。</p>
+<h3>追问：acks=1 和 acks=all 差别是什么？</h3>
+<p>acks=1 只等待 Leader 本地追加，Leader 在复制前故障可能丢失已确认记录；acks=all 等待 ISR 条件满足，延迟和可用性代价更高但可靠性更强。</p>
+<h3>追问：为什么 ISR 收缩会影响生产者？</h3>
+<p>当剩余 ISR 数低于 min.insync.replicas，Leader 无法安全满足 acks=all 的确认条件，生产者会收到失败或超时，应用必须有明确处理策略。</p>
